@@ -5,7 +5,7 @@
 
 > Store Dataframes as TileDB Arrays
 
-`cellarr_frame` uses 2-dimensional arrays instead of TileDB's default way of storing these objects in 1-dimension. The 2nd dimension is along the column axis. 
+`cellarr_frame` uses 2-dimensional arrays instead of TileDB's default way of storing these objects in 1-dimension. The 2nd dimension is along the column axis.
 `cellarr_frames` can be either dense (for cases where all objects share the same column names) or sparse for scenario's where columns are not consistent
 
 ## Install
