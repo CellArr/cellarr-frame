@@ -14,3 +14,9 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
+
+
+from .base import CellArrFrame
+from .dense import DenseCellArrFrame
+from .sparse import SparseCellArrFrame
+from .helpers import create_cellarr_frame
