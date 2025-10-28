@@ -77,16 +77,16 @@ def test_empty_sparse_dataframe():
     uri = "test_empty_sparse_df"
     if os.path.exists(uri):
         shutil.rmtree(uri)
-    
+
     empty_df = pd.DataFrame(np.nan, index=[0, 1], columns=[0, 1])
-    
+
     create_cellarr_frame(uri, sparse=True, df=empty_df)
-    
+
     cdf = SparseCellArrFrame(uri)
     cdf.write_dataframe(empty_df)
-    
+
     read_df = cdf.read_dataframe()
-    
+
     assert read_df.empty
-    
+
     shutil.rmtree(uri)

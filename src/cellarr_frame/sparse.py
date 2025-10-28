@@ -1,6 +1,5 @@
 from typing import List, Optional, Union
 
-import numpy as np
 import pandas as pd
 import tiledb
 from cellarr_array import SparseCellArray
