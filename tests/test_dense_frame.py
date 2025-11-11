@@ -5,7 +5,7 @@ import numpy as np
 import tiledb
 import pytest
 
-from cellarr_frame import DenseCellArrFrame, create_cellarr_frame
+from cellarr_frame import DenseCellArrayFrame, create_cellarr_frame
 
 __author__ = "Jayaram Kancherla"
 __copyright__ = "Jayaram Kancherla"
@@ -24,11 +24,9 @@ def test_dense_dataframe_write_read(dense_df):
     if os.path.exists(uri):
         shutil.rmtree(uri)
 
-    # Write the dataframe
     create_cellarr_frame(uri, sparse=False, df=dense_df)
 
-    # Read the dataframe
-    cdf = DenseCellArrFrame(uri)
+    cdf = DenseCellArrayFrame(uri)
     read_df = cdf.read_dataframe()
 
     pd.testing.assert_frame_equal(dense_df, read_df)
