@@ -5,8 +5,8 @@
 
 A high-level Python package for managing DataFrames using TileDB as a backing store. This package provides two distinct, storage strategies for your data.
 
-  * **`DenseCellArrFrame`**: For standard DataFrames. Uses TileDB's native 1D array, multi-attribute storage. This is highly efficient for dataframes with columns of mixed types (e.g., numbers, strings, dates).
-  * **`SparseCellArrFrame`**: For sparse DataFrames. Uses a 2D sparse `cellarr-array` to store data in a "coordinate" (COO) format. This is ideal for very large DataFrames where most values are `NaN` or `0` (e.g., gene-cell matrices).
+  * **`DenseCellArrayFrame`**: For standard DataFrames. Uses TileDB's native 1D array, multi-attribute storage. This is highly efficient for dataframes with columns of mixed types (e.g., numbers, strings, dates).
+  * **`SparseCellArrayFrame`**: For sparse DataFrames. Uses a 2D sparse `cellarr-array` to store data in a "coordinate" (COO) format. This is ideal for very large DataFrames where most values are `NaN` or `0` (e.g., gene-cell matrices).
 
 ## Installation
 
@@ -35,7 +35,7 @@ create_cellarr_frame("my_sparse_frame_str.tdb", sparse=True, dim_dtypes=[str, st
 ```
 
 
-## `DenseCellArrFrame` (Native DataFrames)
+## `DenseCellArrayFrame` (Native DataFrames)
 
 This is the best/standard choice for typical, dense dataframes.
 
@@ -46,7 +46,7 @@ This class is designed for efficient appends. The `create_cellarr_frame` functio
 ```python
 import pandas as pd
 import numpy as np
-from cellarr_frame import create_cellarr_frame, DenseCellArrFrame
+from cellarr_frame import create_cellarr_frame, DenseCellArrayFrame
 
 # 1. Create and write the first DataFrame
 df1 = pd.DataFrame({
@@ -57,7 +57,7 @@ df1 = pd.DataFrame({
 create_cellarr_frame("dense.tdb", sparse=False, df=df1)
 
 # 2. Open the frame and append a second DataFrame
-cdf = DenseCellArrFrame("dense.tdb")
+cdf = DenseCellArrayFrame("dense.tdb")
 print(f"Shape before append: {cdf.shape}")
 
 df2 = pd.DataFrame({
@@ -129,7 +129,7 @@ print(f"Index: {cdf.index}")       # RangeIndex(start=0, stop=10, step=1)
 
 -----
 
-## 2\. `SparseCellArrFrame` (Sparse DataFrames)
+## 2\. `SparseCellArrayFrame` (Sparse DataFrames)
 
 This is the best choice for data that is mostly empty (`NaN`). It only stores the values that exist, saving significant space.
 
@@ -140,7 +140,7 @@ Writing to a sparse frame involves `stack()`-ing the DataFrame to find all non-`
 ```python
 import pandas as pd
 import numpy as np
-from cellarr_frame import create_cellarr_frame, SparseCellArrFrame
+from cellarr_frame import create_cellarr_frame, SparseCellArrayFrame
 
 # 1. Create a sparse DataFrame (most values are NaN)
 df1 = pd.DataFrame({
@@ -153,7 +153,7 @@ df1 = pd.DataFrame({
 create_cellarr_frame("sparse.tdb", sparse=True, df=df1, dim_dtypes=[np.uint64, np.uint64])
 
 # 2. Open the frame and append new data
-sdf = SparseCellArrFrame("sparse.tdb")
+sdf = SparseCellArrayFrame("sparse.tdb")
 print(f"Shape before append: {sdf.shape}")
 
 # This new DataFrame will be appended starting at the next available row index
@@ -209,12 +209,12 @@ subset = sdf[0:2, [1]]
 
 ### String Dimensions
 
-`SparseCellArrFrame` also fully supports string-based row and column labels.
+`SparseCellArrayFrame` also fully supports string-based row and column labels.
 
 ```python
 # Create with string dimensions
 create_cellarr_frame("sparse_str.tdb", sparse=True, dim_dtypes=[str, str])
-sdf_str = SparseCellArrFrame("sparse_str.tdb")
+sdf_str = SparseCellArrayFrame("sparse_str.tdb")
 
 # Write DataFrame with string index/columns
 df_str1 = pd.DataFrame({'col_A': [1.0, np.nan]}, index=['row_A', 'row_B'])
