@@ -13,9 +13,9 @@ def dense_uri():
     uri = "test_dense_append_df"
     if os.path.exists(uri):
         shutil.rmtree(uri)
-    
+
     yield uri
-    
+
     shutil.rmtree(uri)
 
 def test_dense_append_basic(dense_uri):

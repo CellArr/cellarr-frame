@@ -11,7 +11,7 @@ def dense_uri():
     uri = "test_dense_features_df"
     if os.path.exists(uri):
         shutil.rmtree(uri)
-    
+
     df = pd.DataFrame({
         'A': np.arange(10),
         'B': [f'val_{i}' for i in range(10)]
