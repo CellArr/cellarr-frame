@@ -1,0 +1,45 @@
+cellarr\_frame package
+======================
+
+Submodules
+----------
+
+cellarr\_frame.base module
+--------------------------
+
+.. automodule:: cellarr_frame.base
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+cellarr\_frame.dense module
+---------------------------
+
+.. automodule:: cellarr_frame.dense
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+cellarr\_frame.helpers module
+-----------------------------
+
+.. automodule:: cellarr_frame.helpers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+cellarr\_frame.sparse module
+----------------------------
+
+.. automodule:: cellarr_frame.sparse
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: cellarr_frame
+   :members:
+   :show-inheritance:
+   :undoc-members:
