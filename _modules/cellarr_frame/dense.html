@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>cellarr_frame.dense - cellarr-frame 0.0.1 documentation</title>
+        <title>cellarr_frame.dense - cellarr-frame 0.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cellarr-frame 0.0.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">cellarr-frame 0.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">cellarr-frame 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">cellarr-frame 0.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -238,6 +238,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tiledb</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CellArrayFrame</span>
 
@@ -250,6 +251,86 @@
 <a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.dense.DenseCellArrayFrame">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DenseCellArrayFrame</span><span class="p">(</span><span class="n">CellArrayFrame</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler for dense dataframes using TileDB&#39;s native dataframe support.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DenseCellArrayFrame.from_dataframe">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.dense.DenseCellArrayFrame.from_dataframe">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dataframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DenseCellArrayFrame&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a DenseCellArrayFrame from a pandas DataFrame.</span>
+
+<span class="sd">        This uses tiledb.from_pandas to create the array, ensuring compatibility</span>
+<span class="sd">        with TileDB&#39;s native pandas integration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            uri:</span>
+<span class="sd">                URI to create the array at.</span>
+
+<span class="sd">            df:</span>
+<span class="sd">                Pandas DataFrame to write.</span>
+
+<span class="sd">            **kwargs:</span>
+<span class="sd">                Additional arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ctx&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_or_context&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Ctx</span><span class="p">):</span>
+                <span class="n">ctx</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">ctx</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Ctx</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Ctx</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;full_domain&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;full_domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># # 1. Define Domain</span>
+        <span class="c1"># row_dim_name = kwargs.get(&quot;row_name&quot;)</span>
+        <span class="c1"># if not row_dim_name and df.index.name:</span>
+        <span class="c1">#     row_dim_name = df.index.name</span>
+        <span class="c1"># if not row_dim_name:</span>
+        <span class="c1">#     row_dim_name = &quot;__tiledb_rows&quot;</span>
+
+        <span class="c1"># # Create a dense dimension with max domain</span>
+        <span class="c1"># row_dim = tiledb.Dim(</span>
+        <span class="c1">#     name=row_dim_name,</span>
+        <span class="c1">#     domain=(0, np.iinfo(np.int64).max - 1024),</span>
+        <span class="c1">#     tile=min(1000, len(df)) if len(df) &gt; 0 else 1000,</span>
+        <span class="c1">#     dtype=np.int64,</span>
+        <span class="c1">#     ctx=ctx,</span>
+        <span class="c1"># )</span>
+        <span class="c1"># dom = tiledb.Domain(row_dim, ctx=ctx)</span>
+
+        <span class="c1"># # 2. Define Attributes</span>
+        <span class="c1"># attrs = []</span>
+        <span class="c1"># for col_name in df.columns:</span>
+        <span class="c1">#     col_dtype = df[col_name].dtype</span>
+
+        <span class="c1">#     if pd.api.types.is_object_dtype(col_dtype) or pd.api.types.is_string_dtype(col_dtype):</span>
+        <span class="c1">#         tiledb_dtype = str</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         tiledb_dtype = col_dtype</span>
+
+        <span class="c1">#     filters = [tiledb.ZstdFilter()]</span>
+        <span class="c1">#     attrs.append(tiledb.Attr(name=col_name, dtype=tiledb_dtype, filters=filters, ctx=ctx))</span>
+
+        <span class="c1"># # 3. Create Schema</span>
+        <span class="c1"># schema = tiledb.ArraySchema(</span>
+        <span class="c1">#     domain=dom, sparse=False, attrs=attrs, cell_order=&quot;row-major&quot;, tile_order=&quot;row-major&quot;, ctx=ctx</span>
+        <span class="c1"># )</span>
+
+        <span class="c1"># tiledb.Array.create(uri, schema, ctx=ctx)</span>
+
+        <span class="c1"># # 4. Write Data</span>
+        <span class="c1"># frame = cls(uri, config_or_context=ctx)</span>
+        <span class="c1"># frame.append_dataframe(df, row_offset=0)</span>
+
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">config_or_context</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frame</span></div>
+
 
 <div class="viewcode-block" id="DenseCellArrayFrame.write_dataframe">
 <a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.dense.DenseCellArrayFrame.write_dataframe">[docs]</a>
@@ -312,20 +393,27 @@
                     <span class="k">elif</span> <span class="s2">&quot;__tiledb_rows&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_names</span><span class="p">:</span>
                         <span class="n">primary_key_column_name</span> <span class="o">=</span> <span class="s2">&quot;__tiledb_rows&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;primary_key_column_name&#39; must be provided for queries on dense frames.&quot;</span><span class="p">)</span>
+                        <span class="k">pass</span>
 
                 <span class="n">all_columns</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">columns</span> <span class="k">else</span> <span class="p">[</span><span class="n">A</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">nattr</span><span class="p">)]</span>
-                <span class="k">if</span> <span class="n">primary_key_column_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_columns</span> <span class="ow">and</span> <span class="n">primary_key_column_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr_names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">primary_key_column_name</span>
+                    <span class="ow">and</span> <span class="n">primary_key_column_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_columns</span>
+                    <span class="ow">and</span> <span class="n">primary_key_column_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr_names</span>
+                <span class="p">):</span>
                     <span class="n">all_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primary_key_column_name</span><span class="p">)</span>
 
                 <span class="n">q</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cond</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">all_columns</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">df</span><span class="p">[:]</span>
 
-                <span class="k">if</span> <span class="n">primary_key_column_name</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                    <span class="n">mask</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">primary_key_column_name</span><span class="p">)</span><span class="o">.</span><span class="n">fill</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-                        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
-                    <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">primary_key_column_name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mask</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">primary_key_column_name</span> <span class="ow">and</span> <span class="n">primary_key_column_name</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">mask</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">primary_key_column_name</span><span class="p">)</span><span class="o">.</span><span class="n">fill</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                            <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+                        <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">primary_key_column_name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mask</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">data</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">data</span>
 
@@ -353,7 +441,7 @@
             <span class="n">user_requested_dim</span> <span class="o">=</span> <span class="n">columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dim_name</span> <span class="ow">in</span> <span class="n">columns</span>
             <span class="n">dim_is_also_attr</span> <span class="o">=</span> <span class="n">dim_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr_names</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">user_requested_dim</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dim_is_also_attr</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user_requested_dim</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dim_is_also_attr</span> <span class="ow">and</span> <span class="n">dim_name</span> <span class="o">==</span> <span class="s2">&quot;__tiledb_rows&quot;</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">dim_name</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 
         <span class="c1"># Replace null characters with NaN</span>
@@ -393,11 +481,7 @@
         <span class="k">if</span> <span class="n">row_offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">row_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">write_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
-
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
-            <span class="n">end_row</span> <span class="o">=</span> <span class="n">row_offset</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-            <span class="n">A</span><span class="p">[</span><span class="n">row_offset</span><span class="p">:</span><span class="n">end_row</span><span class="p">]</span> <span class="o">=</span> <span class="n">write_data</span></div>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">dataframe</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">row_start_idx</span><span class="o">=</span><span class="n">row_offset</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DenseCellArrayFrame.__getitem__">
@@ -439,8 +523,63 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the row index of the dataframe.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for index to match Metadata interface.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dtypes of the columns/attributes in the array.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">nattr</span><span class="p">):</span>
+                <span class="n">attr</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtype</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+    <span class="c1"># def add_columns(self, columns: Dict[str, Any]) -&gt; None:</span>
+    <span class="c1">#     &quot;&quot;&quot;Add new columns to the array via TileDB schema evolution.</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         columns:</span>
+    <span class="c1">#             A dictionary mapping new column names to their data.</span>
+    <span class="c1">#             Data length must match the current number of rows.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     with self.open_array(&quot;r&quot;) as A:</span>
+    <span class="c1">#         ctx = A.ctx</span>
+    <span class="c1">#         current_rows = self.shape[0]</span>
+
+    <span class="c1">#     se = tiledb.ArraySchemaEvolution(ctx)</span>
+    <span class="c1">#     new_df = pd.DataFrame(columns)</span>
+
+    <span class="c1">#     if current_rows &gt; 0 and len(new_df) != current_rows:</span>
+    <span class="c1">#         raise ValueError(f&quot;New columns length {len(new_df)} does not match array length {current_rows}&quot;)</span>
+
+    <span class="c1">#     for col_name in new_df.columns:</span>
+    <span class="c1">#         if col_name in self.columns:</span>
+    <span class="c1">#             continue  # Skip if exists</span>
+
+    <span class="c1">#         col_dtype = new_df[col_name].dtype</span>
+    <span class="c1">#         if pd.api.types.is_object_dtype(col_dtype) or pd.api.types.is_string_dtype(col_dtype):</span>
+    <span class="c1">#             tiledb_dtype = str</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             tiledb_dtype = col_dtype</span>
+
+    <span class="c1">#         attr = tiledb.Attr(name=col_name, dtype=tiledb_dtype, filters=[tiledb.ZstdFilter()], ctx=ctx)</span>
+    <span class="c1">#         se.add_attribute(attr)</span>
+
+    <span class="c1">#     se.array_evolve(self.uri)</span>
+
+    <span class="c1">#     if len(new_df) &gt; 0:</span>
+    <span class="c1">#         write_dict = {col: new_df[col].to_numpy() for col in new_df.columns}</span>
+    <span class="c1">#         with self.open_array(&quot;w&quot;) as A: # does not take single attributes</span>
+    <span class="c1">#             A[0 : len(new_df)] = write_dict</span>
 </pre></div>
         </article>
       </div>
@@ -473,7 +612,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+</div><script src="../../_static/documentation_options.js?v=e3a6060d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

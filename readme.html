@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Contributing" href="contributing.html"><link rel="prev" title="cellarr-frame" href="index.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>cellarr-frame - cellarr-frame 0.0.1 documentation</title>
+        <title>cellarr-frame - cellarr-frame 0.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">cellarr-frame 0.0.1 documentation</div></a>
+      <a href="index.html"><div class="brand">cellarr-frame 0.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">cellarr-frame 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">cellarr-frame 0.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -245,8 +245,8 @@
 <h1>cellarr-frame<a class="headerlink" href="#cellarr-frame" title="Link to this heading">¶</a></h1>
 <p>A high-level Python package for managing DataFrames using TileDB as a backing store. This package provides two distinct, storage strategies for your data.</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">DenseCellArrFrame</span></code></strong>: For standard DataFrames. Uses TileDB’s native 1D array, multi-attribute storage. This is highly efficient for dataframes with columns of mixed types (e.g., numbers, strings, dates).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">SparseCellArrFrame</span></code></strong>: For sparse DataFrames. Uses a 2D sparse <code class="docutils literal notranslate"><span class="pre">cellarr-array</span></code> to store data in a “coordinate” (COO) format. This is ideal for very large DataFrames where most values are <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code> (e.g., gene-cell matrices).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code></strong>: For standard DataFrames. Uses TileDB’s native 1D array, multi-attribute storage. This is highly efficient for dataframes with columns of mixed types (e.g., numbers, strings, dates).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code></strong>: For sparse DataFrames. Uses a 2D sparse <code class="docutils literal notranslate"><span class="pre">cellarr-array</span></code> to store data in a “coordinate” (COO) format. This is ideal for very large DataFrames where most values are <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code> (e.g., gene-cell matrices).</p></li>
 </ul>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
@@ -272,15 +272,15 @@
 </pre></div>
 </div>
 </section>
-<section id="densecellarrframe-native-dataframes">
-<h2><code class="docutils literal notranslate"><span class="pre">DenseCellArrFrame</span></code> (Native DataFrames)<a class="headerlink" href="#densecellarrframe-native-dataframes" title="Link to this heading">¶</a></h2>
+<section id="densecellarrayframe-native-dataframes">
+<h2><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code> (Native DataFrames)<a class="headerlink" href="#densecellarrayframe-native-dataframes" title="Link to this heading">¶</a></h2>
 <p>This is the best/standard choice for typical, dense dataframes.</p>
 <section id="writing-and-appending">
 <h3>Writing and Appending<a class="headerlink" href="#writing-and-appending" title="Link to this heading">¶</a></h3>
 <p>This class is designed for efficient appends. The <code class="docutils literal notranslate"><span class="pre">create_cellarr_frame</span></code> function (or <code class="docutils literal notranslate"><span class="pre">write_dataframe</span></code>) writes the first chunk, and <code class="docutils literal notranslate"><span class="pre">append_dataframe</span></code> adds new rows to the end.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span><span class="p">,</span> <span class="n">DenseCellArrFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span><span class="p">,</span> <span class="n">DenseCellArrayFrame</span>
 
 <span class="c1"># 1. Create and write the first DataFrame</span>
 <span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
@@ -291,7 +291,7 @@
 <span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;dense.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df1</span><span class="p">)</span>
 
 <span class="c1"># 2. Open the frame and append a second DataFrame</span>
-<span class="n">cdf</span> <span class="o">=</span> <span class="n">DenseCellArrFrame</span><span class="p">(</span><span class="s2">&quot;dense.tdb&quot;</span><span class="p">)</span>
+<span class="n">cdf</span> <span class="o">=</span> <span class="n">DenseCellArrayFrame</span><span class="p">(</span><span class="s2">&quot;dense.tdb&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape before append: </span><span class="si">{</span><span class="n">cdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
@@ -363,15 +363,15 @@
 </section>
 </section>
 <hr class="docutils" />
-<section id="sparsecellarrframe-sparse-dataframes">
-<h2>2. <code class="docutils literal notranslate"><span class="pre">SparseCellArrFrame</span></code> (Sparse DataFrames)<a class="headerlink" href="#sparsecellarrframe-sparse-dataframes" title="Link to this heading">¶</a></h2>
+<section id="sparsecellarrayframe-sparse-dataframes">
+<h2>2. <code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code> (Sparse DataFrames)<a class="headerlink" href="#sparsecellarrayframe-sparse-dataframes" title="Link to this heading">¶</a></h2>
 <p>This is the best choice for data that is mostly empty (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>). It only stores the values that exist, saving significant space.</p>
 <section id="id1">
 <h3>Writing and Appending<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>Writing to a sparse frame involves <code class="docutils literal notranslate"><span class="pre">stack()</span></code>-ing the DataFrame to find all non-<code class="docutils literal notranslate"><span class="pre">NaN</span></code> values and writing them to the 2D array.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span><span class="p">,</span> <span class="n">SparseCellArrFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span><span class="p">,</span> <span class="n">SparseCellArrayFrame</span>
 
 <span class="c1"># 1. Create a sparse DataFrame (most values are NaN)</span>
 <span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
@@ -384,7 +384,7 @@
 <span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;sparse.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df1</span><span class="p">,</span> <span class="n">dim_dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">])</span>
 
 <span class="c1"># 2. Open the frame and append new data</span>
-<span class="n">sdf</span> <span class="o">=</span> <span class="n">SparseCellArrFrame</span><span class="p">(</span><span class="s2">&quot;sparse.tdb&quot;</span><span class="p">)</span>
+<span class="n">sdf</span> <span class="o">=</span> <span class="n">SparseCellArrayFrame</span><span class="p">(</span><span class="s2">&quot;sparse.tdb&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape before append: </span><span class="si">{</span><span class="n">sdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># This new DataFrame will be appended starting at the next available row index</span>
@@ -440,10 +440,10 @@
 </section>
 <section id="string-dimensions">
 <h3>String Dimensions<a class="headerlink" href="#string-dimensions" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">SparseCellArrFrame</span></code> also fully supports string-based row and column labels.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code> also fully supports string-based row and column labels.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create with string dimensions</span>
 <span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;sparse_str.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim_dtypes</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
-<span class="n">sdf_str</span> <span class="o">=</span> <span class="n">SparseCellArrFrame</span><span class="p">(</span><span class="s2">&quot;sparse_str.tdb&quot;</span><span class="p">)</span>
+<span class="n">sdf_str</span> <span class="o">=</span> <span class="n">SparseCellArrayFrame</span><span class="p">(</span><span class="s2">&quot;sparse_str.tdb&quot;</span><span class="p">)</span>
 
 <span class="c1"># Write DataFrame with string index/columns</span>
 <span class="n">df_str1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col_A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;row_A&#39;</span><span class="p">,</span> <span class="s1">&#39;row_B&#39;</span><span class="p">])</span>
@@ -540,13 +540,13 @@ and <a class="reference external" href="https://pyscaffold.org/">PyScaffold</a>.
 <li><a class="reference internal" href="#">cellarr-frame</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#factory-function-create-cellarr-frame">Factory Function: <code class="docutils literal notranslate"><span class="pre">create_cellarr_frame</span></code></a></li>
-<li><a class="reference internal" href="#densecellarrframe-native-dataframes"><code class="docutils literal notranslate"><span class="pre">DenseCellArrFrame</span></code> (Native DataFrames)</a><ul>
+<li><a class="reference internal" href="#densecellarrayframe-native-dataframes"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code> (Native DataFrames)</a><ul>
 <li><a class="reference internal" href="#writing-and-appending">Writing and Appending</a></li>
 <li><a class="reference internal" href="#reading-and-querying">Reading and Querying</a></li>
 <li><a class="reference internal" href="#properties">Properties</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sparsecellarrframe-sparse-dataframes">2. <code class="docutils literal notranslate"><span class="pre">SparseCellArrFrame</span></code> (Sparse DataFrames)</a><ul>
+<li><a class="reference internal" href="#sparsecellarrayframe-sparse-dataframes">2. <code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code> (Sparse DataFrames)</a><ul>
 <li><a class="reference internal" href="#id1">Writing and Appending</a></li>
 <li><a class="reference internal" href="#id2">Reading and Querying</a></li>
 <li><a class="reference internal" href="#string-dimensions">String Dimensions</a></li>
@@ -565,7 +565,7 @@ and <a class="reference external" href="https://pyscaffold.org/">PyScaffold</a>.
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=d45e8c67"></script>
+</div><script src="_static/documentation_options.js?v=e3a6060d"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="prev" title="cellarr_frame" href="modules.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>cellarr_frame package - cellarr-frame 0.0.1 documentation</title>
+        <title>cellarr_frame package - cellarr-frame 0.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">cellarr-frame 0.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">cellarr-frame 0.0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">cellarr-frame 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">cellarr-frame 0.0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -465,6 +465,32 @@ as context will be derived from the object.</p>
 <dd><p>Get the column names (attributes) of the dataframe.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="cellarr_frame.dense.DenseCellArrayFrame.dtypes">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.3.3)"><span class="pre">Series</span></a></em><a class="headerlink" href="#cellarr_frame.dense.DenseCellArrayFrame.dtypes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the dtypes of the columns/attributes in the array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cellarr_frame.dense.DenseCellArrayFrame.from_dataframe">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cellarr_frame/dense.html#DenseCellArrayFrame.from_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cellarr_frame.dense.DenseCellArrayFrame.from_dataframe" title="Link to this definition">¶</a></dt>
+<dd><p>Create a DenseCellArrayFrame from a pandas DataFrame.</p>
+<p>This uses tiledb.from_pandas to create the array, ensuring compatibility
+with TileDB’s native pandas integration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – URI to create the array at.</p></li>
+<li><p><strong>df</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a></span>) – Pandas DataFrame to write.</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame" title="cellarr_frame.dense.DenseCellArrayFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="cellarr_frame.dense.DenseCellArrayFrame.get_shape">
 <span class="sig-name descname"><span class="pre">get_shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cellarr_frame/dense.html#DenseCellArrayFrame.get_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cellarr_frame.dense.DenseCellArrayFrame.get_shape" title="Link to this definition">¶</a></dt>
@@ -503,6 +529,12 @@ as context will be derived from the object.</p>
 <dd class="field-odd"><p>The pandas DataFrame.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cellarr_frame.dense.DenseCellArrayFrame.rows">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Index.html#pandas.Index" title="(in pandas v2.3.3)"><span class="pre">Index</span></a></em><a class="headerlink" href="#cellarr_frame.dense.DenseCellArrayFrame.rows" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for index to match Metadata interface.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -768,9 +800,12 @@ Assumes integer row dimensions for offset calculation.</p>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.__getitem__"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.__getitem__()</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.append_dataframe"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.append_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.columns"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.columns</span></code></a></li>
+<li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.dtypes"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.dtypes</span></code></a></li>
+<li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.from_dataframe"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.from_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.get_shape"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.get_shape()</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.index"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.index</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.read_dataframe"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.read_dataframe()</span></code></a></li>
+<li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.rows"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.rows</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.shape"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.shape</span></code></a></li>
 <li><a class="reference internal" href="#cellarr_frame.dense.DenseCellArrayFrame.write_dataframe"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame.write_dataframe()</span></code></a></li>
 </ul>
@@ -810,7 +845,7 @@ Assumes integer row dimensions for offset calculation.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=d45e8c67"></script>
+</div><script src="../_static/documentation_options.js?v=e3a6060d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
