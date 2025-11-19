@@ -37,22 +37,22 @@ def test_dense_dataframe_write_read(dense_df):
 #     uri = "test_dense_meta"
 #     if os.path.exists(uri):
 #         shutil.rmtree(uri)
-        
+
 #     df = pd.DataFrame({'genes': ['g1', 'g2', 'g3'], 'values': [1, 2, 3]})
 #     DenseCellArrayFrame.from_dataframe(uri, df)
-    
+
 #     cdf = DenseCellArrayFrame(uri)
-    
+
 #     dtypes = cdf.dtypes
 #     assert dtypes['values'] == np.int64
-    
+
 #     new_scores = np.array([0.1, 0.2, 0.3])
 #     cdf.add_columns({'scores': new_scores})
-    
+
 #     assert 'scores' in cdf.columns
 #     assert cdf.shape == (3, 3) # 3 rows, 3 cols (genes, values, scores)
-    
+
 #     read_back = cdf.read_dataframe()
 #     assert np.allclose(read_back['scores'].values, new_scores)
-    
+
 #     shutil.rmtree(uri)

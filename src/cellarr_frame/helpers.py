@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import tiledb
 from cellarr_array import create_cellarray
