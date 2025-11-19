@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,7 @@ class DenseCellArrayFrame(CellArrayFrame):
 
     @classmethod
     def from_dataframe(cls, uri: str, df: pd.DataFrame, **kwargs) -> "DenseCellArrayFrame":
-        """Create a `DenseCellArrayFrame` from a pandas DataFrame using default schemas.
+        """Create a DenseCellArrayFrame from a pandas DataFrame.
 
         This uses tiledb.from_pandas to create the array, ensuring compatibility
         with TileDB's native pandas integration.
@@ -30,15 +30,67 @@ class DenseCellArrayFrame(CellArrayFrame):
                 Pandas DataFrame to write.
 
             **kwargs:
-                Additional arguments passed to tiledb.from_pandas.
+                Additional arguments.
         """
         ctx = kwargs.get("ctx")
+        if ctx is None:
+            val = kwargs.get("config_or_context")
+            if isinstance(val, tiledb.Ctx):
+                ctx = val
+            elif isinstance(val, dict):
+                ctx = tiledb.Ctx(val)
+
+        if ctx is None:
+            ctx = tiledb.Ctx()
 
         if "full_domain" not in kwargs:
             kwargs["full_domain"] = True
 
         tiledb.from_pandas(uri, df, **kwargs)
-        return cls(uri, config_or_context=ctx)
+
+        # # 1. Define Domain
+        # row_dim_name = kwargs.get("row_name")
+        # if not row_dim_name and df.index.name:
+        #     row_dim_name = df.index.name
+        # if not row_dim_name:
+        #     row_dim_name = "__tiledb_rows"
+
+        # # Create a dense dimension with max domain
+        # row_dim = tiledb.Dim(
+        #     name=row_dim_name,
+        #     domain=(0, np.iinfo(np.int64).max - 1024),
+        #     tile=min(1000, len(df)) if len(df) > 0 else 1000,
+        #     dtype=np.int64,
+        #     ctx=ctx,
+        # )
+        # dom = tiledb.Domain(row_dim, ctx=ctx)
+
+        # # 2. Define Attributes
+        # attrs = []
+        # for col_name in df.columns:
+        #     col_dtype = df[col_name].dtype
+
+        #     if pd.api.types.is_object_dtype(col_dtype) or pd.api.types.is_string_dtype(col_dtype):
+        #         tiledb_dtype = str
+        #     else:
+        #         tiledb_dtype = col_dtype
+
+        #     filters = [tiledb.ZstdFilter()]
+        #     attrs.append(tiledb.Attr(name=col_name, dtype=tiledb_dtype, filters=filters, ctx=ctx))
+
+        # # 3. Create Schema
+        # schema = tiledb.ArraySchema(
+        #     domain=dom, sparse=False, attrs=attrs, cell_order="row-major", tile_order="row-major", ctx=ctx
+        # )
+
+        # tiledb.Array.create(uri, schema, ctx=ctx)
+
+        # # 4. Write Data
+        # frame = cls(uri, config_or_context=ctx)
+        # frame.append_dataframe(df, row_offset=0)
+
+        frame = cls(uri, config_or_context=ctx)
+        return frame
 
     def write_dataframe(self, df: pd.DataFrame, **kwargs) -> None:
         """Write a dense pandas DataFrame to a 1D TileDB array.
@@ -97,10 +149,8 @@ class DenseCellArrayFrame(CellArrayFrame):
                         primary_key_column_name = "__tiledb_rows"
                     else:
                         pass
-                        # raise ValueError("'primary_key_column_name' must be provided for queries on dense frames.")
 
                 all_columns = columns.copy() if columns else [A.attr(i).name for i in range(A.nattr)]
-
                 if (
                     primary_key_column_name
                     and primary_key_column_name not in all_columns
@@ -180,12 +230,7 @@ class DenseCellArrayFrame(CellArrayFrame):
         if row_offset is None:
             row_offset = self.get_shape()[0]
 
-        # write_data = {col: df[col].to_numpy() for col in df.columns}
-
-        # with self.open_array(mode="w") as A:
-        #     end_row = row_offset + len(df)
-        #     A[row_offset:end_row] = write_data
-        tiledb.from_pandas(self.uri, dataframe=df, mode="append", row_start_idx=row_offset)
+        tiledb.from_pandas(uri=self.uri, dataframe=df, mode="append", row_start_idx=row_offset, ctx=self._ctx)
 
     def __getitem__(self, key):
         if isinstance(key, str):  # Column selection
@@ -224,3 +269,58 @@ class DenseCellArrayFrame(CellArrayFrame):
     def index(self) -> pd.Index:
         """Get the row index of the dataframe."""
         return pd.RangeIndex(start=0, stop=self.shape[0], step=1)
+
+    @property
+    def rows(self) -> pd.Index:
+        """Alias for index to match Metadata interface."""
+        return self.index
+
+    @property
+    def dtypes(self) -> pd.Series:
+        """Return the dtypes of the columns/attributes in the array."""
+        with self.open_array("r") as A:
+            schema = A.schema
+            data = {}
+            for i in range(schema.nattr):
+                attr = schema.attr(i)
+                dtype = np.dtype(attr.dtype)
+                data[attr.name] = dtype
+            return pd.Series(data)
+
+    # def add_columns(self, columns: Dict[str, Any]) -> None:
+    #     """Add new columns to the array via TileDB schema evolution.
+
+    #     Args:
+    #         columns:
+    #             A dictionary mapping new column names to their data.
+    #             Data length must match the current number of rows.
+    #     """
+    #     with self.open_array("r") as A:
+    #         ctx = A.ctx
+    #         current_rows = self.shape[0]
+
+    #     se = tiledb.ArraySchemaEvolution(ctx)
+    #     new_df = pd.DataFrame(columns)
+
+    #     if current_rows > 0 and len(new_df) != current_rows:
+    #         raise ValueError(f"New columns length {len(new_df)} does not match array length {current_rows}")
+
+    #     for col_name in new_df.columns:
+    #         if col_name in self.columns:
+    #             continue  # Skip if exists
+
+    #         col_dtype = new_df[col_name].dtype
+    #         if pd.api.types.is_object_dtype(col_dtype) or pd.api.types.is_string_dtype(col_dtype):
+    #             tiledb_dtype = str
+    #         else:
+    #             tiledb_dtype = col_dtype
+
+    #         attr = tiledb.Attr(name=col_name, dtype=tiledb_dtype, filters=[tiledb.ZstdFilter()], ctx=ctx)
+    #         se.add_attribute(attr)
+
+    #     se.array_evolve(self.uri)
+
+    #     if len(new_df) > 0:
+    #         write_dict = {col: new_df[col].to_numpy() for col in new_df.columns}
+    #         with self.open_array("w") as A: # does not take single attributes
+    #             A[0 : len(new_df)] = write_dict
