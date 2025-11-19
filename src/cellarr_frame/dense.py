@@ -3,6 +3,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+import tiledb
 
 from .base import CellArrayFrame
 
@@ -13,6 +14,31 @@ __license__ = "MIT"
 
 class DenseCellArrayFrame(CellArrayFrame):
     """Handler for dense dataframes using TileDB's native dataframe support."""
+
+    @classmethod
+    def from_dataframe(cls, uri: str, df: pd.DataFrame, **kwargs) -> "DenseCellArrayFrame":
+        """Create a `DenseCellArrayFrame` from a pandas DataFrame using default schemas.
+
+        This uses tiledb.from_pandas to create the array, ensuring compatibility
+        with TileDB's native pandas integration.
+
+        Args:
+            uri:
+                URI to create the array at.
+
+            df:
+                Pandas DataFrame to write.
+
+            **kwargs:
+                Additional arguments passed to tiledb.from_pandas.
+        """
+        ctx = kwargs.get("ctx")
+
+        if "full_domain" not in kwargs:
+            kwargs["full_domain"] = True
+
+        tiledb.from_pandas(uri, df, **kwargs)
+        return cls(uri, config_or_context=ctx)
 
     def write_dataframe(self, df: pd.DataFrame, **kwargs) -> None:
         """Write a dense pandas DataFrame to a 1D TileDB array.
@@ -70,20 +96,29 @@ class DenseCellArrayFrame(CellArrayFrame):
                     elif "__tiledb_rows" in self.dim_names:
                         primary_key_column_name = "__tiledb_rows"
                     else:
-                        raise ValueError("'primary_key_column_name' must be provided for queries on dense frames.")
+                        pass
+                        # raise ValueError("'primary_key_column_name' must be provided for queries on dense frames.")
 
                 all_columns = columns.copy() if columns else [A.attr(i).name for i in range(A.nattr)]
-                if primary_key_column_name not in all_columns and primary_key_column_name in self.attr_names:
+
+                if (
+                    primary_key_column_name
+                    and primary_key_column_name not in all_columns
+                    and primary_key_column_name in self.attr_names
+                ):
                     all_columns.append(primary_key_column_name)
 
                 q = A.query(cond=query, attrs=all_columns, **kwargs)
                 data = q.df[:]
 
-                if primary_key_column_name in data.columns:
-                    mask = A.attr(primary_key_column_name).fill
-                    if isinstance(mask, bytes):
-                        mask = mask.decode("ascii")
-                    filtered_df = data[data[primary_key_column_name] != mask]
+                if primary_key_column_name and primary_key_column_name in data.columns:
+                    try:
+                        mask = A.attr(primary_key_column_name).fill
+                        if isinstance(mask, bytes):
+                            mask = mask.decode("ascii")
+                        filtered_df = data[data[primary_key_column_name] != mask]
+                    except Exception:
+                        filtered_df = data
                 else:
                     filtered_df = data
 
@@ -111,7 +146,7 @@ class DenseCellArrayFrame(CellArrayFrame):
             user_requested_dim = columns is not None and dim_name in columns
             dim_is_also_attr = dim_name in self.attr_names
 
-            if not user_requested_dim and not dim_is_also_attr:
+            if not user_requested_dim and not dim_is_also_attr and dim_name == "__tiledb_rows":
                 result = result.drop(columns=[dim_name], errors="ignore")
 
         # Replace null characters with NaN
@@ -145,11 +180,12 @@ class DenseCellArrayFrame(CellArrayFrame):
         if row_offset is None:
             row_offset = self.get_shape()[0]
 
-        write_data = {col: df[col].to_numpy() for col in df.columns}
+        # write_data = {col: df[col].to_numpy() for col in df.columns}
 
-        with self.open_array(mode="w") as A:
-            end_row = row_offset + len(df)
-            A[row_offset:end_row] = write_data
+        # with self.open_array(mode="w") as A:
+        #     end_row = row_offset + len(df)
+        #     A[row_offset:end_row] = write_data
+        tiledb.from_pandas(self.uri, dataframe=df, mode="append", row_start_idx=row_offset)
 
     def __getitem__(self, key):
         if isinstance(key, str):  # Column selection
