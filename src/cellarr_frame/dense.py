@@ -188,7 +188,7 @@ class DenseCellArrayFrame(CellArrayFrame):
                             try:
                                 fill_val_decoded = fill_val.decode("ascii")
                                 filtered_df = data[data[filter_target_col] != fill_val_decoded]
-                            except:
+                            except Exception as _:
                                 filtered_df = data[data[filter_target_col] != fill_val]
                         else:
                             filtered_df = data[data[filter_target_col] != fill_val]
