@@ -161,16 +161,40 @@ class DenseCellArrayFrame(CellArrayFrame):
                 q = A.query(cond=query, attrs=all_columns, **kwargs)
                 data = q.df[:]
 
-                if primary_key_column_name and primary_key_column_name in data.columns:
-                    try:
-                        mask = A.attr(primary_key_column_name).fill
-                        if isinstance(mask, bytes):
-                            mask = mask.decode("ascii")
-                        filtered_df = data[data[primary_key_column_name] != mask]
-                    except Exception:
-                        filtered_df = data
+                filter_target_col = None
+                if (
+                    primary_key_column_name
+                    and primary_key_column_name in data.columns
+                    and primary_key_column_name in self.attr_names
+                ):
+                    filter_target_col = primary_key_column_name
                 else:
-                    filtered_df = data
+                    for col in data.columns:
+                        if col in self.attr_names:
+                            filter_target_col = col
+                            break
+
+                filtered_df = data
+                if filter_target_col:
+                    try:
+                        fill_val = A.attr(filter_target_col).fill
+                        if isinstance(fill_val, (list, tuple, np.ndarray)) and len(fill_val) == 1:
+                            fill_val = fill_val[0]
+
+                        if isinstance(fill_val, bytes) and data[filter_target_col].dtype == object:
+                            pass
+
+                        if isinstance(fill_val, bytes):
+                            try:
+                                fill_val_decoded = fill_val.decode("ascii")
+                                filtered_df = data[data[filter_target_col] != fill_val_decoded]
+                            except:
+                                filtered_df = data[data[filter_target_col] != fill_val]
+                        else:
+                            filtered_df = data[data[filter_target_col] != fill_val]
+
+                    except Exception:
+                        pass
 
                 result = filtered_df
                 if columns:
@@ -242,6 +266,15 @@ class DenseCellArrayFrame(CellArrayFrame):
         if isinstance(key, tuple):  # Row and column selection
             rows, cols = key
             cols_list = cols if isinstance(cols, list) else [cols]
+
+            # Support positional indexing for columns
+            if cols_list and all(isinstance(c, int) for c in cols_list):
+                all_cols = self.columns
+                try:
+                    cols_list = [all_cols[i] for i in cols_list]
+                except IndexError:
+                    raise IndexError("Column index out of bounds")
+
             return self.read_dataframe(subset=rows, columns=cols_list)
 
         raise TypeError(f"Unsupported key type for slicing: {type(key)}")
