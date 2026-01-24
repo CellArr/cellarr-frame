@@ -2,22 +2,21 @@ import os
 import shutil
 import pandas as pd
 import numpy as np
-import tiledb
 import pytest
 
-from cellarr_frame import DenseCellArrayFrame, create_cellarr_frame
+from cellarr_frame import DenseCellArrayFrame
 
 __author__ = "Jayaram Kancherla"
 __copyright__ = "Jayaram Kancherla"
 __license__ = "MIT"
 
+
 @pytest.fixture
 def dense_df():
-    return pd.DataFrame({
-        'A': np.arange(10, dtype=np.int32),
-        'B': np.random.rand(10),
-        'C': ['foo' + str(i) for i in range(10)]
-    })
+    return pd.DataFrame(
+        {"A": np.arange(10, dtype=np.int32), "B": np.random.rand(10), "C": ["foo" + str(i) for i in range(10)]}
+    )
+
 
 def test_dense_dataframe_write_read(dense_df):
     uri = "test_dense_df"
@@ -32,6 +31,7 @@ def test_dense_dataframe_write_read(dense_df):
     pd.testing.assert_frame_equal(dense_df, read_df)
 
     shutil.rmtree(uri)
+
 
 # def test_dense_frame_metadata_ops():
 #     uri = "test_dense_meta"

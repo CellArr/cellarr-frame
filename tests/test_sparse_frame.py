@@ -2,7 +2,6 @@ import os
 import shutil
 import pandas as pd
 import numpy as np
-import tiledb
 import pytest
 
 from cellarr_frame import SparseCellArrayFrame, create_cellarr_frame
@@ -11,22 +10,16 @@ __author__ = "Jayaram Kancherla"
 __copyright__ = "Jayaram Kancherla"
 __license__ = "MIT"
 
+
 @pytest.fixture
 def sparse_df_int_dims():
-    data = {
-        0: [1.0, np.nan, np.nan],
-        1: [np.nan, 2.0, np.nan],
-        2: [np.nan, np.nan, 3.0]
-    }
+    data = {0: [1.0, np.nan, np.nan], 1: [np.nan, 2.0, np.nan], 2: [np.nan, np.nan, 3.0]}
     return pd.DataFrame(data)
+
 
 @pytest.fixture
 def sparse_df_str_dims():
-    data = {
-        0: [1.0, np.nan, np.nan],
-        1: [np.nan, 2.0, np.nan],
-        "c": [np.nan, np.nan, 3.0]
-    }
+    data = {0: [1.0, np.nan, np.nan], 1: [np.nan, 2.0, np.nan], "c": [np.nan, np.nan, 3.0]}
     return pd.DataFrame(data)
 
 
