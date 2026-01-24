@@ -55,9 +55,7 @@ def test_sparse_frame_positional_indexing_integer_dim(tmp_path):
 def test_sparse_frame_col_indexing(tmp_path):
     uri = str(tmp_path / "test_sparse_col_idx")
 
-    df = pd.DataFrame(
-        {"val": [10, 20, 30], "other": [1, 2, 3]}, index=["a", "b", "c"]
-    )
+    df = pd.DataFrame({"val": [10, 20, 30], "other": [1, 2, 3]}, index=["a", "b", "c"])
 
     create_cellarr_frame(uri, sparse=True, df=df, dim_dtypes=[str, str])
     sdf = SparseCellArrayFrame(uri)
@@ -66,12 +64,12 @@ def test_sparse_frame_col_indexing(tmp_path):
     cols = sdf.columns
     target_idx = 1
     target_col = cols[target_idx]
-    
+
     res = sdf[0:2, [target_idx]]
 
     assert len(res) == 2
     assert res.columns.tolist() == [target_col]
-    
+
     if target_col == "other":
         assert res.iloc[0, 0] == 1
     elif target_col == "val":
