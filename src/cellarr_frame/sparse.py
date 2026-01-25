@@ -103,32 +103,32 @@ class SparseCellArrayFrame(CellArrayFrame):
         Returns:
             The pandas DataFrame.
         """
-        # Determine the full set of columns to be used for the scaffold.
-        # If user passed a list, use that. Otherwise, get ALL columns from the array.
         if columns is not None:
             final_columns = pd.Index(columns)
         else:
             final_columns = self.columns
 
-        # Determine the full row index to be used for the scaffold.
         final_index = None
         row_dim_dtype = self._array.dim_dtypes[0]
 
         if subset is None:
-            # If no subset, get ALL rows from the array.
-            final_index = self.index
-        elif isinstance(subset, slice) and np.issubdtype(row_dim_dtype, np.integer):
-            # If it's a slice on an integer dimension, create a RangeIndex
-            # This will be the "scaffold" for the rows.
-            start = subset.start if subset.start is not None else 0
+            if query is None:
+                final_index = self.index
+        elif isinstance(subset, slice):
+            if np.issubdtype(row_dim_dtype, np.integer):
+                start = subset.start if subset.start is not None else 0
 
-            if subset.stop is not None:
-                final_index = pd.RangeIndex(
-                    start=start, stop=subset.stop, step=subset.step if subset.step is not None else 1
-                )
+                if subset.stop is not None:
+                    final_index = pd.RangeIndex(
+                        start=start, stop=subset.stop, step=subset.step if subset.step is not None else 1
+                    )
+                else:
+                    all_rows = self.index
+                    final_index = all_rows[all_rows.slice_indexer(start, None, subset.step)]
             else:
                 all_rows = self.index
-                final_index = all_rows[all_rows.slice_indexer(start, None, subset.step)]
+                final_index = all_rows[subset]
+                subset = final_index.tolist()
         elif isinstance(subset, (int, str)):
             final_index = pd.Index([subset])
         elif isinstance(subset, list):
@@ -177,7 +177,10 @@ class SparseCellArrayFrame(CellArrayFrame):
             pass
 
         for col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="ignore")
+            try:
+                df[col] = pd.to_numeric(df[col])
+            except (ValueError, TypeError):
+                pass
 
         if columns:
             df = df[columns]
@@ -270,6 +273,14 @@ class SparseCellArrayFrame(CellArrayFrame):
         if isinstance(key, tuple):  # Row and column selection, e.g., df[0:10, ['col_A']]
             rows, cols = key
             cols_list = cols if isinstance(cols, list) else [cols]
+
+            # Support positional indexing for columns
+            if cols_list and all(isinstance(c, int) for c in cols_list):
+                all_cols = self.columns
+                try:
+                    cols_list = [all_cols[i] for i in cols_list]
+                except IndexError:
+                    raise IndexError("Column index out of bounds")
 
             return self.read_dataframe(subset=rows, columns=cols_list)
 
