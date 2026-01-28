@@ -304,7 +304,14 @@ class DenseCellArrayFrame(CellArrayFrame):
     @property
     def index(self) -> pd.Index:
         """Get the row index of the dataframe."""
-        return pd.RangeIndex(start=0, stop=self.shape[0], step=1)
+        with self.open_array("r") as A:
+            rows = A.unique_dim_values(self.dim_names[0])
+            decoded_rows = [r.decode() if isinstance(r, bytes) else r for r in rows]
+
+            try:
+                return pd.Index(pd.to_numeric(decoded_rows))
+            except (ValueError, TypeError):
+                return pd.Index(decoded_rows)
 
     @property
     def rows(self) -> pd.Index:
