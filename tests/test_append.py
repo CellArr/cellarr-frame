@@ -32,7 +32,6 @@ def test_dense_append_basic(dense_uri):
     read_df = cdf.read_dataframe()
     assert read_df.shape[0] == 10
 
-    print(read_df, df2)
     pd.testing.assert_frame_equal(read_df.iloc[5:].reset_index(drop=True), df2)
     assert cdf.get_shape() == (10,)
 

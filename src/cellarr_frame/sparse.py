@@ -272,15 +272,18 @@ class SparseCellArrayFrame(CellArrayFrame):
 
         if isinstance(key, tuple):  # Row and column selection, e.g., df[0:10, ['col_A']]
             rows, cols = key
-            cols_list = cols if isinstance(cols, list) else [cols]
+            cols_list = cols if isinstance(cols, (list, slice, range)) else [cols]
 
             # Support positional indexing for columns
-            if cols_list and all(isinstance(c, int) for c in cols_list):
+            if cols_list:
                 all_cols = self.columns
-                try:
-                    cols_list = [all_cols[i] for i in cols_list]
-                except IndexError:
-                    raise IndexError("Column index out of bounds")
+                if isinstance(cols_list, (slice, range)):
+                    cols_list = list(all_cols[cols_list])
+                elif all(isinstance(c, int) for c in cols_list):
+                    try:
+                        cols_list = [all_cols[i] for i in cols_list]
+                    except IndexError:
+                        raise IndexError("Column index out of bounds")
 
             return self.read_dataframe(subset=rows, columns=cols_list)
 
