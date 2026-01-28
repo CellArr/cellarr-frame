@@ -108,6 +108,13 @@ def test_dense_frame_positional_indexing_both(tmp_path):
     assert res.index.tolist() == [0, 1]
 
 
+    res = ddf[0:2, :1]
+    assert len(res) == 2
+    assert res.iloc[0]["val"] == 10
+    assert res.iloc[1]["val"] == 20
+    assert res.index.tolist() == [0, 1]
+    assert res.columns.tolist() == ["val"]
+
 def test_dense_frame_int_indexing(tmp_path):
     uri = str(tmp_path / "test_dense_int_idx")
 

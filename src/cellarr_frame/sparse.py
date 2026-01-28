@@ -274,8 +274,6 @@ class SparseCellArrayFrame(CellArrayFrame):
             rows, cols = key
             cols_list = cols if isinstance(cols, (list, slice, range)) else [cols]
 
-            print("cols_list", cols_list)
-
             # Support positional indexing for columns
             if cols_list:
                 all_cols = self.columns
@@ -286,8 +284,6 @@ class SparseCellArrayFrame(CellArrayFrame):
                         cols_list = [all_cols[i] for i in cols_list]
                     except IndexError:
                         raise IndexError("Column index out of bounds")
-                    
-            print("cols_list", cols_list)
 
             return self.read_dataframe(subset=rows, columns=cols_list)
 
