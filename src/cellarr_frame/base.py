@@ -151,15 +151,33 @@ class CellArrayBaseFrame(ABC):
             with self.open_array(mode="r") as A:
                 ned = A.nonempty_domain()
                 rows = 0
-                if ned:
+                is_sparse = A.schema.sparse
+
+                if is_sparse:
+                    ned = A.nonempty_domain()
+                    if ned:
+                        dim0_ned = ned[0]
+                        if isinstance(dim0_ned, tuple) and len(dim0_ned) == 2:
+                            if isinstance(dim0_ned[0], (int, np.integer, float, np.floating)):
+                                rows = int(dim0_ned[1]) - int(dim0_ned[0]) + 1
+                            else:
+                                rows = -1
+                        else:
+                            rows = -1
+                else:
                     dom = A.schema.domain
                     if dom.ndim == 1:
                         if not np.issubdtype(dom.dim(0).dtype, np.str_):
-                            rows = dom.dim(0).domain[1] - dom.dim(0).domain[0] + 1
+                            dmin = int(dom.dim(0).domain[0])
+                            dmax = int(dom.dim(0).domain[1])
+                            rows = dmax - dmin + 1
                         else:
                             rows = -1
                     else:
-                        rows = -1
+                        try:
+                            rows = A.shape[0]
+                        except Exception:
+                            rows = -1
 
                 self._shape = (rows, A.schema.nattr)
         return self._shape

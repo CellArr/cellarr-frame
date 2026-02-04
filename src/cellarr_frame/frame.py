@@ -70,6 +70,7 @@ class CellArrayFrame(CellArrayBaseFrame):
         """
         mode = "append" if append else "ingest"
         tiledb.from_pandas(uri=self.uri, dataframe=data, mode=mode, ctx=self._ctx, **kwargs)
+        self._shape = None
 
     @classmethod
     def create(
