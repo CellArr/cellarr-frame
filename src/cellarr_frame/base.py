@@ -11,8 +11,8 @@ __copyright__ = "Jayaram Kancherla"
 __license__ = "MIT"
 
 
-class CellArrayFrame(ABC):
-    """Abstract base class for TileDB dataframe operations."""
+class CellArrayBaseFrame(ABC):
+    """Abstract base class for TileDB DataFrame operations."""
 
     def __init__(
         self,
@@ -20,43 +20,33 @@ class CellArrayFrame(ABC):
         tiledb_array_obj: Optional[tiledb.Array] = None,
         mode: Optional[Literal["r", "w", "d", "m"]] = None,
         config_or_context: Optional[Union[tiledb.Config, tiledb.Ctx]] = None,
+        validate: bool = True,
     ):
         """Initialize the object.
 
         Args:
             uri:
-                URI to the array.
-                Required if 'tiledb_array_obj' is not provided.
+                URI to the array. Required if 'tiledb_array_obj' is not provided.
 
             tiledb_array_obj:
-                Optional, an already opened ``tiledb.Array`` instance.
-                If provided, 'uri' can be None, and 'config_or_context' is ignored.
+                Optional, an already opened tiledb object.
 
             mode:
-                Open the array object in read 'r', write 'w', modify
-                'm' mode, or delete 'd' mode.
-
-                Defaults to None for automatic mode switching.
-
-                If 'tiledb_array_obj' is provided, this mode should ideally match
-                the mode of the provided array or be None.
+                Open mode ('r', 'w', 'd', 'm'). Defaults to None (auto).
 
             config_or_context:
-                Optional config or context object. Ignored if 'tiledb_array_obj' is provided,
-                as context will be derived from the object.
+                TileDB Config or Ctx.
 
-                Defaults to None.
+            validate:
+                Whether to validate the connection.
         """
         self._array_passed_in = False
         self._opened_array_external = None
         self._ctx = None
 
         if tiledb_array_obj is not None:
-            if not isinstance(tiledb_array_obj, tiledb.Array):
-                raise ValueError("'tiledb_array_obj' must be a tiledb.Array instance.")
-
             if not tiledb_array_obj.isopen:
-                raise ValueError("If 'tiledb_array_obj' is provided, it must be an open tiledb.Array instance.")
+                raise ValueError("Provided 'tiledb_array_obj' must be open.")
 
             self.uri = tiledb_array_obj.uri
             self._array_passed_in = True
@@ -64,17 +54,14 @@ class CellArrayFrame(ABC):
 
             if mode is not None and tiledb_array_obj.mode != mode:
                 raise ValueError(
-                    f"Provided array mode '{tiledb_array_obj.mode}' does not match requested mode '{mode}'.",
-                    "Re-open the external array with the desired mode or pass matching mode.",
+                    f"Provided array mode '{tiledb_array_obj.mode}' does not match requested mode '{mode}'."
                 )
-
             self._mode = tiledb_array_obj.mode
             self._ctx = tiledb_array_obj.ctx
         elif uri is not None:
             self.uri = uri
             self._mode = mode
             self._array_passed_in = False
-            self._opened_array_external = None
 
             if config_or_context is None:
                 self._ctx = None
@@ -87,17 +74,24 @@ class CellArrayFrame(ABC):
         else:
             raise ValueError("Either 'uri' or 'tiledb_array_obj' must be provided.")
 
+        self._column_names = None
+        self._index_names = None
         self._shape = None
-        self._ndim = None
-        self._dim_names = None
-        self._dim_dtypes = None
-        self._attr_names = None
         self._nonempty_domain = None
+
+        if validate:
+            self._validate()
+
+    def _validate(self):
+        """Validate that the URI points to a valid TileDB array/dataframe."""
+        with self.open_array(mode="r") as A:
+            if not isinstance(A, (tiledb.Array, tiledb.SparseArray, tiledb.DenseArray)):
+                pass
 
     @property
     def mode(self) -> Optional[str]:
         """Get current array mode. If an external array is used, this is its open mode."""
-        if self._array_passed_in and self._opened_array_external is not None:
+        if self._array_passed_in and self._opened_array_external:
             return self._opened_array_external.mode
 
         return self._mode
@@ -106,185 +100,116 @@ class CellArrayFrame(ABC):
     def mode(self, value: Optional[str]):
         """Set array mode for subsequent operations if not using an external array."""
         if self._array_passed_in:
-            current_ext_mode = self._opened_array_external.mode if self._opened_array_external else "unknown"
-            if value != current_ext_mode:
-                raise ValueError(
-                    f"Cannot change mode of an externally managed array (current: {current_ext_mode}). "
-                    "Re-open the external array with the new mode and re-initialize CellArrayFrame."
-                )
+            raise ValueError("Cannot change mode of an externally managed array.")
+
         if value is not None and value not in ["r", "w", "m", "d"]:
             raise ValueError("Mode must be one of: None, 'r', 'w', 'm', 'd'")
 
         self._mode = value
 
-    @property
-    def dim_names(self) -> List[str]:
-        """Get dimension names of the array."""
-        if self._dim_names is None:
-            with self.open_array(mode="r") as A:
-                self._dim_names = [dim.name for dim in A.schema.domain]
-
-        return self._dim_names
-
-    @property
-    def attr_names(self) -> List[str]:
-        """Get attribute names of the array."""
-        if self._attr_names is None:
-            with self.open_array(mode="r") as A:
-                self._attr_names = [A.schema.attr(i).name for i in range(A.schema.nattr)]
-
-        return self._attr_names
-
-    @property
-    def nonempty_domain(self) -> Optional[Tuple[Any, ...]]:
-        """Get the non-empty domain of the array."""
-        if self._nonempty_domain is None:
-            with self.open_array(mode="r") as A:
-                ned = A.nonempty_domain()
-                if ned is None:
-                    self._nonempty_domain = None
-                else:
-                    self._nonempty_domain = tuple(ned) if isinstance(ned[0], tuple) else (ned,)
-
-        return self._nonempty_domain
-
-    @property
-    def ndim(self) -> int:
-        """Get number of dimensions."""
-        if self._ndim is None:
-            with self.open_array(mode="r") as A:
-                self._ndim = A.schema.ndim
-
-        return self._ndim
-
-    @property
-    def dim_dtypes(self) -> List[np.dtype]:
-        """Get dimension dtypes of the array."""
-        if self._dim_dtypes is None:
-            with self.open_array(mode="r") as A:
-                self._dim_dtypes = [dim.dtype for dim in A.schema.domain]
-
-        return self._dim_dtypes
-
     @contextmanager
     def open_array(self, mode: Optional[str] = None):
-        """Context manager for array operations.
-
-        Uses the externally provided array if available, otherwise opens from URI.
-        """
-        if self._array_passed_in and self._opened_array_external is not None:
+        """Context manager for array operations."""
+        if self._array_passed_in and self._opened_array_external:
             if not self._opened_array_external.isopen:
                 try:
                     self._opened_array_external.reopen()
                 except Exception as e:
-                    raise tiledb.TileDBError(
-                        f"Externally provided array is closed and could not be reopened: {e}"
-                    ) from e
-
-            effective_mode = mode if mode is not None else self._opened_array_external.mode
-            current_external_mode = self._opened_array_external.mode
-
-            if effective_mode == "r" and current_external_mode not in ["r", "w", "m"]:
-                pass
-            elif effective_mode in ["w", "d", "m"] and current_external_mode != effective_mode:
-                # Allow 'w' or 'm' if external is 'm'
-                if effective_mode in ["w", "m"] and current_external_mode == "m":
-                    pass
-                else:
-                    raise tiledb.TileDBError(
-                        f"Requested operation mode '{effective_mode}' is incompatible with the "
-                        f"externally provided array's mode '{current_external_mode}'."
-                    )
+                    raise tiledb.TileDBError(f"External array closed/cannot reopen: {e}") from e
 
             yield self._opened_array_external
         else:
-            effective_mode = mode if mode is not None else self.mode
-            effective_mode = effective_mode if effective_mode is not None else "r"
+            effective_mode = mode if mode is not None else (self.mode or "r")
             array = tiledb.open(self.uri, mode=effective_mode, ctx=self._ctx)
-
             try:
                 yield array
             finally:
                 array.close()
 
-    @abstractmethod
-    def write_dataframe(self, df: pd.DataFrame, **kwargs) -> None:
-        """Write a pandas DataFrame to the TileDB array.
+    @property
+    def column_names(self) -> List[str]:
+        """Get attribute/column names of the dataframe."""
+        if self._column_names is None:
+            with self.open_array(mode="r") as A:
+                self._column_names = [A.schema.attr(i).name for i in range(A.schema.nattr)]
 
-        Args:
-            df:
-                The pandas DataFrame to write.
-
-            **kwargs:
-                Additional arguments for the write operation.
-        """
-        pass
-
-    @abstractmethod
-    def read_dataframe(
-        self,
-        columns: Optional[List[str]] = None,
-        query: Optional[str] = None,
-        subset: Optional[Union[slice, int, str]] = None,
-        **kwargs,
-    ) -> pd.DataFrame:
-        """Read a pandas DataFrame from the TileDB array.
-
-        Args:
-            subset:
-                A slice or index to select rows.
-
-            columns:
-                A list of column names to read.
-
-            query:
-                A TileDB query condition string.
-
-            **kwargs:
-                Additional arguments for the read operation.
-
-        Returns:
-            The pandas DataFrame.
-        """
-        pass
-
-    @abstractmethod
-    def append_dataframe(self, df: pd.DataFrame, row_offset: Optional[int] = None) -> None:
-        """Append a pandas DataFrame to the TileDB array.
-
-        Args:
-            df:
-                The pandas DataFrame to write.
-
-            row_offset:
-                Row offset to write the rows to.
-        """
-        pass
-
-    @abstractmethod
-    def get_shape(self) -> tuple:
-        """Get the shape of the array (number of rows for dataframes)."""
-        pass
-
-    @abstractmethod
-    def __getitem__(self, key):
-        """Read a slice of the dataframe."""
-        pass
+        return self._column_names
 
     @property
-    @abstractmethod
-    def shape(self) -> tuple:
-        """Get the shape of the dataframe."""
-        pass
+    def index_names(self) -> List[str]:
+        """Get dimension/index names of the dataframe."""
+        if self._index_names is None:
+            with self.open_array(mode="r") as A:
+                self._index_names = [dim.name for dim in A.schema.domain]
+
+        return self._index_names
 
     @property
+    def shape(self) -> Tuple[int, ...]:
+        """Get the shape of the dataframe (rows, columns)."""
+        if self._shape is None:
+            with self.open_array(mode="r") as A:
+                ned = A.nonempty_domain()
+                rows = 0
+                if ned:
+                    dom = A.schema.domain
+                    if dom.ndim == 1:
+                        if not np.issubdtype(dom.dim(0).dtype, np.str_):
+                            rows = dom.dim(0).domain[1] - dom.dim(0).domain[0] + 1
+                        else:
+                            rows = -1
+                    else:
+                        rows = -1
+
+                self._shape = (rows, A.schema.nattr)
+        return self._shape
+
+    def vacuum(self) -> None:
+        tiledb.vacuum(self.uri, ctx=self._ctx)
+
+    def consolidate(self) -> None:
+        tiledb.consolidate(self.uri, ctx=self._ctx)
+        self.vacuum()
+
+    def __getitem__(self, key: Union[slice, str, Tuple[Any, ...]]) -> pd.DataFrame:
+        """Route slicing/querying to implementation.
+
+        Args:
+            key:
+                - str: Query condition (e.g., "age > 20")
+                - slice/int: Row selection
+                - tuple: (rows, columns) selection
+        """
+        row_spec = slice(None)
+        col_spec = None  # None implies all columns
+
+        if isinstance(key, str):
+            return self._read_query(condition=key, columns=None)
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if len(key) >= 1:
+            row_spec = key[0]
+        if len(key) >= 2:
+            col_spec = key[1]
+            if isinstance(col_spec, str):
+                col_spec = [col_spec]
+
+        if isinstance(row_spec, str):
+            return self._read_query(condition=row_spec, columns=col_spec)
+
+        return self._read_slice(row_spec, col_spec)
+
     @abstractmethod
-    def columns(self) -> pd.Index:
-        """Get the column names of the dataframe."""
+    def _read_slice(self, rows: Any, cols: Optional[List[str]]) -> pd.DataFrame:
         pass
 
-    @property
     @abstractmethod
-    def index(self) -> pd.Index:
-        """Get the row index of the dataframe."""
+    def _read_query(self, condition: str, columns: Optional[List[str]]) -> pd.DataFrame:
+        pass
+
+    @abstractmethod
+    def write_batch(self, data: pd.DataFrame, **kwargs) -> None:
+        """Write or append data to the frame."""
         pass
