@@ -50,7 +50,7 @@ cf = CellArrayFrame(uri=uri)
 # Returns a Pandas DataFrame
 print(cf[0:2])
 #          name  expression    category
-# row_id                               
+# row_id
 # 0       GeneA        12.5      coding
 # 1       GeneB         0.0  non-coding
 
