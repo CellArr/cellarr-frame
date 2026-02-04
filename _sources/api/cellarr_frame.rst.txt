@@ -12,26 +12,10 @@ cellarr\_frame.base module
    :show-inheritance:
    :undoc-members:
 
-cellarr\_frame.dense module
+cellarr\_frame.frame module
 ---------------------------
 
-.. automodule:: cellarr_frame.dense
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-cellarr\_frame.helpers module
------------------------------
-
-.. automodule:: cellarr_frame.helpers
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-cellarr\_frame.sparse module
-----------------------------
-
-.. automodule:: cellarr_frame.sparse
+.. automodule:: cellarr_frame.frame
    :members:
    :show-inheritance:
    :undoc-members:

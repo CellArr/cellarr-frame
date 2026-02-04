@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>cellarr_frame.base - cellarr-frame 0.0.4 documentation</title>
+        <title>cellarr_frame.base - cellarr-frame 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cellarr-frame 0.0.4 documentation</div></a>
+      <a href="../../index.html"><div class="brand">cellarr-frame 0.0.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">cellarr-frame 0.0.4 documentation</span>
+  <span class="sidebar-brand-text">cellarr-frame 0.0.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -246,56 +246,46 @@
 <span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;MIT&quot;</span>
 
 
-<div class="viewcode-block" id="CellArrayFrame">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">CellArrayFrame</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for TileDB dataframe operations.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CellArrayBaseFrame">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CellArrayBaseFrame</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for TileDB DataFrame operations.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CellArrayFrame.__init__">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.__init__">[docs]</a>
+<div class="viewcode-block" id="CellArrayBaseFrame.__init__">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tiledb_array_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">config_or_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">tiledb</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Ctx</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            uri:</span>
-<span class="sd">                URI to the array.</span>
-<span class="sd">                Required if &#39;tiledb_array_obj&#39; is not provided.</span>
+<span class="sd">                URI to the array. Required if &#39;tiledb_array_obj&#39; is not provided.</span>
 
 <span class="sd">            tiledb_array_obj:</span>
-<span class="sd">                Optional, an already opened ``tiledb.Array`` instance.</span>
-<span class="sd">                If provided, &#39;uri&#39; can be None, and &#39;config_or_context&#39; is ignored.</span>
+<span class="sd">                Optional, an already opened tiledb object.</span>
 
 <span class="sd">            mode:</span>
-<span class="sd">                Open the array object in read &#39;r&#39;, write &#39;w&#39;, modify</span>
-<span class="sd">                &#39;m&#39; mode, or delete &#39;d&#39; mode.</span>
-
-<span class="sd">                Defaults to None for automatic mode switching.</span>
-
-<span class="sd">                If &#39;tiledb_array_obj&#39; is provided, this mode should ideally match</span>
-<span class="sd">                the mode of the provided array or be None.</span>
+<span class="sd">                Open mode (&#39;r&#39;, &#39;w&#39;, &#39;d&#39;, &#39;m&#39;). Defaults to None (auto).</span>
 
 <span class="sd">            config_or_context:</span>
-<span class="sd">                Optional config or context object. Ignored if &#39;tiledb_array_obj&#39; is provided,</span>
-<span class="sd">                as context will be derived from the object.</span>
+<span class="sd">                TileDB Config or Ctx.</span>
 
-<span class="sd">                Defaults to None.</span>
+<span class="sd">            validate:</span>
+<span class="sd">                Whether to validate the connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">tiledb_array_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tiledb_array_obj</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;tiledb_array_obj&#39; must be a tiledb.Array instance.&quot;</span><span class="p">)</span>
-
             <span class="k">if</span> <span class="ow">not</span> <span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">isopen</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If &#39;tiledb_array_obj&#39; is provided, it must be an open tiledb.Array instance.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided &#39;tiledb_array_obj&#39; must be open.&quot;</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">uri</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="o">=</span> <span class="kc">True</span>
@@ -303,17 +293,14 @@
 
             <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="n">mode</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Provided array mode &#39;</span><span class="si">{</span><span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; does not match requested mode &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;Re-open the external array with the desired mode or pass matching mode.&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Provided array mode &#39;</span><span class="si">{</span><span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; does not match requested mode &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
                 <span class="p">)</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">mode</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span> <span class="o">=</span> <span class="n">tiledb_array_obj</span><span class="o">.</span><span class="n">ctx</span>
         <span class="k">elif</span> <span class="n">uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="k">if</span> <span class="n">config_or_context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span> <span class="o">=</span> <span class="kc">None</span>
@@ -326,18 +313,25 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either &#39;uri&#39; or &#39;tiledb_array_obj&#39; must be provided.&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_column_names</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_names</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dim_names</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dim_dtypes</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nonempty_domain</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonempty_domain</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that the URI points to a valid TileDB array/dataframe.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">tiledb</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">SparseArray</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">DenseArray</span><span class="p">)):</span>
+                <span class="k">pass</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current array mode. If an external array is used, this is its open mode.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="o">.</span><span class="n">mode</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
@@ -346,206 +340,152 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set array mode for subsequent operations if not using an external array.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span><span class="p">:</span>
-            <span class="n">current_ext_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="o">.</span><span class="n">mode</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">current_ext_mode</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Cannot change mode of an externally managed array (current: </span><span class="si">{</span><span class="n">current_ext_mode</span><span class="si">}</span><span class="s2">). &quot;</span>
-                    <span class="s2">&quot;Re-open the external array with the new mode and re-initialize CellArrayFrame.&quot;</span>
-                <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot change mode of an externally managed array.&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mode must be one of: None, &#39;r&#39;, &#39;w&#39;, &#39;m&#39;, &#39;d&#39;&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dim_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get dimension names of the array.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dim_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">dim</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">domain</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_names</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">attr_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get attribute names of the array.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">nattr</span><span class="p">)]</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">nonempty_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the non-empty domain of the array.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonempty_domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
-                <span class="n">ned</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">nonempty_domain</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">ned</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_nonempty_domain</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_nonempty_domain</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ned</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ned</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">ned</span><span class="p">,)</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonempty_domain</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get number of dimensions.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">ndim</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ndim</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dim_dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get dimension dtypes of the array.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_dtypes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dim_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">dim</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">domain</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_dtypes</span>
-
-<div class="viewcode-block" id="CellArrayFrame.open_array">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.open_array">[docs]</a>
+<div class="viewcode-block" id="CellArrayBaseFrame.open_array">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame.open_array">[docs]</a>
     <span class="nd">@contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">open_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Context manager for array operations.</span>
-
-<span class="sd">        Uses the externally provided array if available, otherwise opens from URI.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Context manager for array operations.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_passed_in</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="o">.</span><span class="n">isopen</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="o">.</span><span class="n">reopen</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">TileDBError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Externally provided array is closed and could not be reopened: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-
-            <span class="n">effective_mode</span> <span class="o">=</span> <span class="n">mode</span> <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="o">.</span><span class="n">mode</span>
-            <span class="n">current_external_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span><span class="o">.</span><span class="n">mode</span>
-
-            <span class="k">if</span> <span class="n">effective_mode</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span> <span class="ow">and</span> <span class="n">current_external_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">]:</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">effective_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">current_external_mode</span> <span class="o">!=</span> <span class="n">effective_mode</span><span class="p">:</span>
-                <span class="c1"># Allow &#39;w&#39; or &#39;m&#39; if external is &#39;m&#39;</span>
-                <span class="k">if</span> <span class="n">effective_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">current_external_mode</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span>
-                    <span class="k">pass</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">TileDBError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Requested operation mode &#39;</span><span class="si">{</span><span class="n">effective_mode</span><span class="si">}</span><span class="s2">&#39; is incompatible with the &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;externally provided array&#39;s mode &#39;</span><span class="si">{</span><span class="n">current_external_mode</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">TileDBError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;External array closed/cannot reopen: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opened_array_external</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">effective_mode</span> <span class="o">=</span> <span class="n">mode</span> <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span>
-            <span class="n">effective_mode</span> <span class="o">=</span> <span class="n">effective_mode</span> <span class="k">if</span> <span class="n">effective_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;r&quot;</span>
+            <span class="n">effective_mode</span> <span class="o">=</span> <span class="n">mode</span> <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="ow">or</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
             <span class="n">array</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">effective_mode</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span><span class="p">)</span>
-
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">array</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="n">array</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="CellArrayFrame.write_dataframe">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.write_dataframe">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">write_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a pandas DataFrame to the TileDB array.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get attribute/column names of the dataframe.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_column_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">nattr</span><span class="p">)]</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            df:</span>
-<span class="sd">                The pandas DataFrame to write.</span>
-
-<span class="sd">            **kwargs:</span>
-<span class="sd">                Additional arguments for the write operation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="CellArrayFrame.read_dataframe">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.read_dataframe">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_dataframe</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">subset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">slice</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a pandas DataFrame from the TileDB array.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            subset:</span>
-<span class="sd">                A slice or index to select rows.</span>
-
-<span class="sd">            columns:</span>
-<span class="sd">                A list of column names to read.</span>
-
-<span class="sd">            query:</span>
-<span class="sd">                A TileDB query condition string.</span>
-
-<span class="sd">            **kwargs:</span>
-<span class="sd">                Additional arguments for the read operation.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The pandas DataFrame.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="CellArrayFrame.append_dataframe">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.append_dataframe">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">row_offset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a pandas DataFrame to the TileDB array.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            df:</span>
-<span class="sd">                The pandas DataFrame to write.</span>
-
-<span class="sd">            row_offset:</span>
-<span class="sd">                Row offset to write the rows to.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="CellArrayFrame.get_shape">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.get_shape">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the shape of the array (number of rows for dataframes).&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="CellArrayFrame.__getitem__">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayFrame.__getitem__">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a slice of the dataframe.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_names</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get dimension/index names of the dataframe.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_index_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">dim</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">domain</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_names</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the shape of the dataframe (rows, columns).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">:</span>
+                <span class="n">ned</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">nonempty_domain</span><span class="p">()</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">is_sparse</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">sparse</span>
+
+                <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
+                    <span class="n">ned</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">nonempty_domain</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">ned</span><span class="p">:</span>
+                        <span class="n">dim0_ned</span> <span class="o">=</span> <span class="n">ned</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim0_ned</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">dim0_ned</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim0_ned</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+                                <span class="n">rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dim0_ned</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">dim0_ned</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">rows</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">rows</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dom</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">domain</span>
+                    <span class="k">if</span> <span class="n">dom</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dom</span><span class="o">.</span><span class="n">dim</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">):</span>
+                            <span class="n">dmin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dom</span><span class="o">.</span><span class="n">dim</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                            <span class="n">dmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dom</span><span class="o">.</span><span class="n">dim</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="n">rows</span> <span class="o">=</span> <span class="n">dmax</span> <span class="o">-</span> <span class="n">dmin</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">rows</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">rows</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="n">rows</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">nattr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
+
+<div class="viewcode-block" id="CellArrayBaseFrame.vacuum">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame.vacuum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vacuum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">vacuum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CellArrayBaseFrame.consolidate">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame.consolidate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consolidate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">consolidate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vacuum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CellArrayBaseFrame.__getitem__">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame.__getitem__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">slice</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Route slicing/querying to implementation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key:</span>
+<span class="sd">                - str: Query condition (e.g., &quot;age &gt; 20&quot;)</span>
+<span class="sd">                - slice/int: Row selection</span>
+<span class="sd">                - tuple: (rows, columns) selection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">row_spec</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">col_spec</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># None implies all columns</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_query</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">row_spec</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">col_spec</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col_spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">col_spec</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_spec</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">row_spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_query</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="n">row_spec</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_spec</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_slice</span><span class="p">(</span><span class="n">row_spec</span><span class="p">,</span> <span class="n">col_spec</span><span class="p">)</span></div>
+
+
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the shape of the dataframe.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the column names of the dataframe.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="nd">@property</span>
+<div class="viewcode-block" id="CellArrayBaseFrame.write_batch">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.base.CellArrayBaseFrame.write_batch">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the row index of the dataframe.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write or append data to the frame.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -579,7 +519,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+</div><script src="../../_static/documentation_options.js?v=282f96c0"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

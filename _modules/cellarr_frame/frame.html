@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>cellarr_frame.helpers - cellarr-frame 0.0.4 documentation</title>
+        <title>cellarr_frame.frame - cellarr-frame 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cellarr-frame 0.0.4 documentation</div></a>
+      <a href="../../index.html"><div class="brand">cellarr-frame 0.0.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -182,7 +182,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">cellarr-frame 0.0.4 documentation</span>
+  <span class="sidebar-brand-text">cellarr-frame 0.0.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -232,85 +232,109 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for cellarr_frame.helpers</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+          <h1>Source code for cellarr_frame.frame</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tiledb</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarray</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CellArrayBaseFrame</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Jayaram Kancherla&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Jayaram Kancherla&quot;</span>
 <span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;MIT&quot;</span>
 
 
-<div class="viewcode-block" id="create_cellarr_frame">
-<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.helpers.create_cellarr_frame">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_cellarr_frame</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sparse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory function to create a TileDB array for a CellArrayFrame.</span>
+<div class="viewcode-block" id="CellArrayFrame">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.frame.CellArrayFrame">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CellArrayFrame</span><span class="p">(</span><span class="n">CellArrayBaseFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation for TileDB DataFrames.&quot;&quot;&quot;</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        uri:</span>
-<span class="sd">            The URI for the new TileDB array.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read data using direct slicing.</span>
 
-<span class="sd">        sparse:</span>
-<span class="sd">            Whether to create a sparse or dense array.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            rows:</span>
+<span class="sd">                Slice object, specific index (int/str), or list of indices.</span>
 
-<span class="sd">        df:</span>
-<span class="sd">            An optional pandas DataFrame to infer schema from.</span>
+<span class="sd">            cols:</span>
+<span class="sd">                List of column names to retrieve.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">start</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">stop</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">step</span>
 
-<span class="sd">        **kwargs:</span>
-<span class="sd">            Additional arguments for array creation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-        <span class="n">dim_dtypes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dim_dtypes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">stop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stop</span> <span class="o">-=</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="n">dim_dtypes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">dim_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">dim_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">array</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">cols</span> <span class="k">if</span> <span class="n">cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_names</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span>
 
-        <span class="n">ctx_config</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config_or_context&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;config_or_context&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
 
-        <span class="n">sdf</span> <span class="o">=</span> <span class="n">create_cellarray</span><span class="p">(</span>
-            <span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span>
-            <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
-            <span class="n">attr_dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">dim_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">],</span>
-            <span class="n">dim_dtypes</span><span class="o">=</span><span class="n">dim_dtypes</span><span class="p">,</span>
-            <span class="n">attr_name</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read data using a string query condition.</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseCellArrayFrame</span>
+<span class="sd">        Args:</span>
+<span class="sd">            condition:</span>
+<span class="sd">                TileDB query string (e.g. &quot;val &gt; 5.0&quot;).</span>
 
-        <span class="n">sdf</span> <span class="o">=</span> <span class="n">SparseCellArrayFrame</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sdf</span><span class="o">.</span><span class="n">write_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="sd">            columns:</span>
+<span class="sd">                List of column names to retrieve.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_array</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">array</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="n">columns</span> <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_names</span>
+            <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cond</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="p">[:]</span>
 
-        <span class="k">return</span> <span class="n">sdf</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">.dense</span><span class="w"> </span><span class="kn">import</span> <span class="n">DenseCellArrayFrame</span>
+<div class="viewcode-block" id="CellArrayFrame.write_batch">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.frame.CellArrayFrame.write_batch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a batch of data to the frame.</span>
 
-            <span class="n">ctx</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ctx&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;config_or_context&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">val</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;config_or_context&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Ctx</span><span class="p">):</span>
-                    <span class="n">ctx</span> <span class="o">=</span> <span class="n">val</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Config</span><span class="p">)):</span>
-                    <span class="n">ctx</span> <span class="o">=</span> <span class="n">tiledb</span><span class="o">.</span><span class="n">Ctx</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data:</span>
+<span class="sd">                Pandas DataFrame to write.</span>
 
-            <span class="k">return</span> <span class="n">DenseCellArrayFrame</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="sd">            append:</span>
+<span class="sd">                If True, appends to existing array. If False, might overwrite/schema_only</span>
+<span class="sd">                depending on lower-level tiledb.from_pandas behavior, but mostly used for appending.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;append&quot;</span> <span class="k">if</span> <span class="n">append</span> <span class="k">else</span> <span class="s2">&quot;ingest&quot;</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">dataframe</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ctx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For dense frames, it&#39;s recommended to provide a DataFrame to infer the schema.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CellArrayFrame.create">
+<a class="viewcode-back" href="../../api/cellarr_frame.html#cellarr_frame.frame.CellArrayFrame.create">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">index_dims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">full_domain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper to create a new CellFrame from a dataframe.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            uri:</span>
+<span class="sd">                Path to create array.</span>
+
+<span class="sd">            data:</span>
+<span class="sd">                Initial dataframe (can be empty schema if used with mode=&#39;schema_only&#39;).</span>
+
+<span class="sd">            index_dims:</span>
+<span class="sd">                Columns to use as dimensions (indices).</span>
+
+<span class="sd">            full_domain:</span>
+<span class="sd">                Whether to allow the domain to extend to the full range of the dtype (default True).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tiledb</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index_dims</span><span class="o">=</span><span class="n">index_dims</span><span class="p">,</span> <span class="n">full_domain</span><span class="o">=</span><span class="n">full_domain</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
@@ -344,7 +368,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+</div><script src="../../_static/documentation_options.js?v=282f96c0"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

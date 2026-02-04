@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Contributing" href="contributing.html"><link rel="prev" title="cellarr-frame" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>cellarr-frame - cellarr-frame 0.0.4 documentation</title>
+        <title>cellarr-frame - cellarr-frame 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">cellarr-frame 0.0.4 documentation</div></a>
+      <a href="index.html"><div class="brand">cellarr-frame 0.0.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -183,7 +183,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">cellarr-frame 0.0.4 documentation</span>
+  <span class="sidebar-brand-text">cellarr-frame 0.0.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -243,233 +243,97 @@
 <img alt="Unit tests" src="https://github.com/CellArr/cellarr-frame/actions/workflows/run-tests.yml/badge.svg" /></p>
 <section class="tex2jax_ignore mathjax_ignore" id="cellarr-frame">
 <h1>cellarr-frame<a class="headerlink" href="#cellarr-frame" title="Link to this heading">¶</a></h1>
-<p>A high-level Python package for managing DataFrames using TileDB as a backing store. This package provides two distinct, storage strategies for your data.</p>
-<ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code></strong>: For standard DataFrames. Uses TileDB’s native 1D array, multi-attribute storage. This is highly efficient for dataframes with columns of mixed types (e.g., numbers, strings, dates).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code></strong>: For sparse DataFrames. Uses a 2D sparse <code class="docutils literal notranslate"><span class="pre">cellarr-array</span></code> to store data in a “coordinate” (COO) format. This is ideal for very large DataFrames where most values are <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code> (e.g., gene-cell matrices).</p></li>
-</ul>
+<p><code class="docutils literal notranslate"><span class="pre">cellarr-frame</span></code> provides a high-level, Pandas-like interface for interacting with TileDB DataFrames.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
-<p>To get started, install the package from <a class="reference external" href="https://pypi.org/project/cellarr-frame/">PyPI</a></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>cellarr-frame
 </pre></div>
 </div>
 </section>
-<section id="factory-function-create-cellarr-frame">
-<h2>Factory Function: <code class="docutils literal notranslate"><span class="pre">create_cellarr_frame</span></code><a class="headerlink" href="#factory-function-create-cellarr-frame" title="Link to this heading">¶</a></h2>
-<p>The easiest way to get started is with the <code class="docutils literal notranslate"><span class="pre">create_cellarr_frame</span></code> factory. It automatically builds the correct TileDB array schema based on an initial DataFrame or specified <code class="docutils literal notranslate"><span class="pre">dim_dtypes</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span>
-
-<span class="c1"># Example 1: Create a DENSE frame by providing an initial DataFrame</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;val_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]})</span>
-<span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;my_dense_frame.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
-
-<span class="c1"># Example 2: Create an EMPTY SPARSE frame with integer-based dimensions</span>
-<span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;my_sparse_frame_int.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim_dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">])</span>
-
-<span class="c1"># Example 3: Create an EMPTY SPARSE frame with string-based dimensions</span>
-<span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;my_sparse_frame_str.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim_dtypes</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
-</pre></div>
-</div>
-</section>
-<section id="densecellarrayframe-native-dataframes">
-<h2><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code> (Native DataFrames)<a class="headerlink" href="#densecellarrayframe-native-dataframes" title="Link to this heading">¶</a></h2>
-<p>This is the best/standard choice for typical, dense dataframes.</p>
-<section id="writing-and-appending">
-<h3>Writing and Appending<a class="headerlink" href="#writing-and-appending" title="Link to this heading">¶</a></h3>
-<p>This class is designed for efficient appends. The <code class="docutils literal notranslate"><span class="pre">create_cellarr_frame</span></code> function (or <code class="docutils literal notranslate"><span class="pre">write_dataframe</span></code>) writes the first chunk, and <code class="docutils literal notranslate"><span class="pre">append_dataframe</span></code> adds new rows to the end.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<section id="creating-a-frame">
+<h3>1. Creating a Frame<a class="headerlink" href="#creating-a-frame" title="Link to this heading">¶</a></h3>
+<p>You can create a new persistent <code class="docutils literal notranslate"><span class="pre">CellArrayFrame</span></code> directly from a Pandas DataFrame.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span><span class="p">,</span> <span class="n">DenseCellArrayFrame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">CellArrayFrame</span>
 
-<span class="c1"># 1. Create and write the first DataFrame</span>
-<span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
-    <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
-    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;foo&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="c1"># Prepare some data</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;GeneA&quot;</span><span class="p">,</span> <span class="s2">&quot;GeneB&quot;</span><span class="p">,</span> <span class="s2">&quot;GeneC&quot;</span><span class="p">,</span> <span class="s2">&quot;GeneD&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">12.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">,</span> <span class="mf">8.1</span><span class="p">],</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;coding&quot;</span><span class="p">,</span> <span class="s2">&quot;non-coding&quot;</span><span class="p">,</span> <span class="s2">&quot;coding&quot;</span><span class="p">,</span> <span class="s2">&quot;coding&quot;</span><span class="p">]</span>
 <span class="p">})</span>
-<span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;dense.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df1</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;row_id&quot;</span>
 
-<span class="c1"># 2. Open the frame and append a second DataFrame</span>
-<span class="n">cdf</span> <span class="o">=</span> <span class="n">DenseCellArrayFrame</span><span class="p">(</span><span class="s2">&quot;dense.tdb&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape before append: </span><span class="si">{</span><span class="n">cdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Create the TileDB array at the specified URI</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;./my_cellarr_frame&quot;</span>
+<span class="c1"># clean up if exists</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
-    <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
-    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;bar&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="c1"># Create with sparse=True to allow flexible appending and querying</span>
+<span class="n">CellArrayFrame</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">full_domain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="basic-slicing">
+<h3>2. Basic Slicing<a class="headerlink" href="#basic-slicing" title="Link to this heading">¶</a></h3>
+<p>Open the frame and slice rows using standard Python syntax.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">CellArrayFrame</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span>
+
+<span class="c1"># Slice the first 2 rows</span>
+<span class="c1"># Returns a Pandas DataFrame</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+<span class="c1">#          name  expression    category</span>
+<span class="c1"># row_id</span>
+<span class="c1"># 0       GeneA        12.5      coding</span>
+<span class="c1"># 1       GeneB         0.0  non-coding</span>
+
+</pre></div>
+</div>
+</section>
+<section id="column-selection">
+<h3>3. Column Selection<a class="headerlink" href="#column-selection" title="Link to this heading">¶</a></h3>
+<p>Optimize performance by selecting only specific columns.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select only &#39;name&#39; and &#39;expression&#39; for the first row</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;expression&quot;</span><span class="p">]])</span>
+
+</pre></div>
+</div>
+</section>
+<section id="querying">
+<h3>4. Querying<a class="headerlink" href="#querying" title="Link to this heading">¶</a></h3>
+<p>Filter data using string conditions. The filtering happens at the storage layer, making it highly efficient for large datasets.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select all rows where expression is greater than 5.0</span>
+<span class="n">high_expr</span> <span class="o">=</span> <span class="n">cf</span><span class="p">[</span><span class="s2">&quot;expression &gt; 5.0&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">high_expr</span><span class="p">)</span>
+
+<span class="c1"># Combine queries with column selection</span>
+<span class="c1"># Get names of all &#39;coding&#39; genes</span>
+<span class="n">coding_genes</span> <span class="o">=</span> <span class="n">cf</span><span class="p">[</span><span class="s2">&quot;category == &#39;coding&#39;&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">coding_genes</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="appending-data">
+<h3>5. Appending Data<a class="headerlink" href="#appending-data" title="Link to this heading">¶</a></h3>
+<p>Append new batches of data to the existing array.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;GeneE&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">99.9</span><span class="p">],</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;coding&quot;</span><span class="p">]</span>
 <span class="p">})</span>
-<span class="n">cdf</span><span class="o">.</span><span class="n">append_dataframe</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span>
+<span class="c1"># Ensure the index continues correctly</span>
+<span class="n">new_data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">new_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;row_id&quot;</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape after append: </span><span class="si">{</span><span class="n">cdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Append to the array</span>
+<span class="n">cf</span><span class="o">.</span><span class="n">write_batch</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span>
 
-<span class="c1"># Shape before append: (5, 3)</span>
-<span class="c1"># Shape after append: (10, 3)</span>
-</pre></div>
-</div>
-</section>
-<section id="reading-and-querying">
-<h3>Reading and Querying<a class="headerlink" href="#reading-and-querying" title="Link to this heading">¶</a></h3>
-<p>You can read the full DataFrame or query it using standard Python slicing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Read the full DataFrame</span>
-<span class="n">full_df</span> <span class="o">=</span> <span class="n">cdf</span><span class="o">.</span><span class="n">read_dataframe</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">full_df</span><span class="p">)</span>
-
-<span class="c1">#     A         B      C</span>
-<span class="c1"># 0   0  0.123456   foo0</span>
-<span class="c1"># 1   1  0.234567   foo1</span>
-<span class="c1"># ...</span>
-<span class="c1"># 8   8  0.456789   bar3</span>
-<span class="c1"># 9   9  0.567890   bar4</span>
-
-<span class="c1"># 2. Querying with __getitem__</span>
-
-<span class="c1"># Get specific rows (exclusive slice, like pandas)</span>
-<span class="n">row_subset</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
-<span class="c1">#    A         B      C</span>
-<span class="c1"># 5  5  0.345678   bar0</span>
-<span class="c1"># 6  6  0.456789   bar1</span>
-<span class="c1"># 7  7  0.567890   bar2</span>
-
-<span class="c1"># Get a single column</span>
-<span class="n">col_A</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
-<span class="c1">#    A</span>
-<span class="c1"># 0  0</span>
-<span class="c1"># 1  1</span>
-<span class="c1"># ...</span>
-
-<span class="c1"># Get multiple columns</span>
-<span class="n">cols_AC</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]]</span>
-<span class="c1">#    A      C</span>
-<span class="c1"># 0  0   foo0</span>
-<span class="c1"># 1  1   foo1</span>
-<span class="c1"># ...</span>
-
-<span class="c1"># Get specific rows and columns</span>
-<span class="n">subset</span> <span class="o">=</span> <span class="n">cdf</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]]</span>
-<span class="c1">#    A      C</span>
-<span class="c1"># 1  1   foo1</span>
-<span class="c1"># 2  2   foo2</span>
-</pre></div>
-</div>
-</section>
-<section id="properties">
-<h3>Properties<a class="headerlink" href="#properties" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">cdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># (10, 3)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Columns: </span><span class="si">{</span><span class="n">cdf</span><span class="o">.</span><span class="n">columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   <span class="c1"># Index([&#39;A&#39;, &#39;B&#39;, &#39;C&#39;], dtype=&#39;object&#39;)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Index: </span><span class="si">{</span><span class="n">cdf</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># RangeIndex(start=0, stop=10, step=1)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<hr class="docutils" />
-<section id="sparsecellarrayframe-sparse-dataframes">
-<h2>2. <code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code> (Sparse DataFrames)<a class="headerlink" href="#sparsecellarrayframe-sparse-dataframes" title="Link to this heading">¶</a></h2>
-<p>This is the best choice for data that is mostly empty (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>). It only stores the values that exist, saving significant space.</p>
-<section id="id1">
-<h3>Writing and Appending<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<p>Writing to a sparse frame involves <code class="docutils literal notranslate"><span class="pre">stack()</span></code>-ing the DataFrame to find all non-<code class="docutils literal notranslate"><span class="pre">NaN</span></code> values and writing them to the 2D array.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cellarr_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_cellarr_frame</span><span class="p">,</span> <span class="n">SparseCellArrayFrame</span>
-
-<span class="c1"># 1. Create a sparse DataFrame (most values are NaN)</span>
-<span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span>  <span class="c1"># Index 0, 1</span>
-    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
-<span class="p">})</span>
-
-<span class="c1"># Create the array and write the data</span>
-<span class="c1"># We specify integer dtypes for the dimensions (row/col labels)</span>
-<span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;sparse.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df1</span><span class="p">,</span> <span class="n">dim_dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">])</span>
-
-<span class="c1"># 2. Open the frame and append new data</span>
-<span class="n">sdf</span> <span class="o">=</span> <span class="n">SparseCellArrayFrame</span><span class="p">(</span><span class="s2">&quot;sparse.tdb&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape before append: </span><span class="si">{</span><span class="n">sdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># This new DataFrame will be appended starting at the next available row index</span>
-<span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span>  <span class="c1"># Relative index 0, 1</span>
-    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span>
-<span class="p">})</span>
-<span class="n">sdf</span><span class="o">.</span><span class="n">append_dataframe</span><span class="p">(</span><span class="n">df2</span><span class="p">)</span> <span class="c1"># Automatically appends at rows 2 and 3</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape after append: </span><span class="si">{</span><span class="n">sdf</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Shape before append: (2, 2)</span>
-<span class="c1"># Shape after append: (4, 3)</span>
-</pre></div>
-</div>
-</section>
-<section id="id2">
-<h3>Reading and Querying<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<p>Reading reconstructs the DataFrame from the sparse coordinates.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Read the full DataFrame</span>
-<span class="n">full_df</span> <span class="o">=</span> <span class="n">sdf</span><span class="o">.</span><span class="n">read_dataframe</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">full_df</span><span class="p">)</span>
-
-<span class="c1">#      0    1    2</span>
-<span class="c1"># 0  1.0  NaN  NaN</span>
-<span class="c1"># 1  NaN  2.0  NaN</span>
-<span class="c1"># 2  NaN  3.0  NaN</span>
-<span class="c1"># 3  NaN  NaN  4.0</span>
-
-<span class="c1"># 2. Querying with __getitem__</span>
-
-<span class="c1"># Get specific rows</span>
-<span class="n">row_subset</span> <span class="o">=</span> <span class="n">sdf</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
-<span class="c1">#      0    1    2</span>
-<span class="c1"># 1  NaN  2.0  NaN</span>
-<span class="c1"># 2  NaN  3.0  NaN</span>
-
-<span class="c1"># Get specific columns (by label)</span>
-<span class="n">col_subset</span> <span class="o">=</span> <span class="n">sdf</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
-<span class="c1">#      0    2</span>
-<span class="c1"># 0  1.0  NaN</span>
-<span class="c1"># 1  NaN  NaN</span>
-<span class="c1"># 2  NaN  NaN</span>
-<span class="c1"># 3  NaN  4.0</span>
-
-<span class="c1"># Get specific rows and columns</span>
-<span class="n">subset</span> <span class="o">=</span> <span class="n">sdf</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-<span class="c1">#      1</span>
-<span class="c1"># 0  NaN</span>
-<span class="c1"># 1  2.0</span>
-</pre></div>
-</div>
-</section>
-<section id="string-dimensions">
-<h3>String Dimensions<a class="headerlink" href="#string-dimensions" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code> also fully supports string-based row and column labels.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create with string dimensions</span>
-<span class="n">create_cellarr_frame</span><span class="p">(</span><span class="s2">&quot;sparse_str.tdb&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim_dtypes</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
-<span class="n">sdf_str</span> <span class="o">=</span> <span class="n">SparseCellArrayFrame</span><span class="p">(</span><span class="s2">&quot;sparse_str.tdb&quot;</span><span class="p">)</span>
-
-<span class="c1"># Write DataFrame with string index/columns</span>
-<span class="n">df_str1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col_A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;row_A&#39;</span><span class="p">,</span> <span class="s1">&#39;row_B&#39;</span><span class="p">])</span>
-<span class="n">sdf_str</span><span class="o">.</span><span class="n">write_dataframe</span><span class="p">(</span><span class="n">df_str1</span><span class="p">)</span>
-
-<span class="c1"># Appending with string dimensions just adds the new coordinates</span>
-<span class="n">df_str2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col_B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">]},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;row_C&#39;</span><span class="p">])</span>
-<span class="n">sdf_str</span><span class="o">.</span><span class="n">append_dataframe</span><span class="p">(</span><span class="n">df_str2</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">sdf_str</span><span class="o">.</span><span class="n">read_dataframe</span><span class="p">())</span>
-<span class="c1">#        col_A  col_B</span>
-<span class="c1"># row_A    1.0    NaN</span>
-<span class="c1"># row_C    NaN    3.0</span>
-</pre></div>
-</div>
-<blockquote>
-<div><p>[!NOTE]</p>
-<p><code class="docutils literal notranslate"><span class="pre">row_B</span></code> is missing since all the values are NaN for this column.</p>
-</div></blockquote>
-</section>
-<section id="id3">
-<h3>Properties<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
-<p>Properties on sparse frames query the array to find the <em>unique</em> dimension labels.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">sdf_str</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># (3, 2)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Columns: </span><span class="si">{</span><span class="n">sdf_str</span><span class="o">.</span><span class="n">columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   <span class="c1"># Index([&#39;col_A&#39;, &#39;col_B&#39;], dtype=&#39;object&#39;)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Index: </span><span class="si">{</span><span class="n">sdf_str</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># Index([&#39;row_A&#39;, &#39;row_B&#39;, &#39;row_C&#39;], dtype=&#39;object&#39;)</span>
+<span class="c1"># Verify the new total count</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total rows: </span><span class="si">{</span><span class="n">cf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <!-- biocsetup-notes -->
@@ -539,18 +403,12 @@ and <a class="reference external" href="https://pyscaffold.org/">PyScaffold</a>.
             <ul>
 <li><a class="reference internal" href="#">cellarr-frame</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#factory-function-create-cellarr-frame">Factory Function: <code class="docutils literal notranslate"><span class="pre">create_cellarr_frame</span></code></a></li>
-<li><a class="reference internal" href="#densecellarrayframe-native-dataframes"><code class="docutils literal notranslate"><span class="pre">DenseCellArrayFrame</span></code> (Native DataFrames)</a><ul>
-<li><a class="reference internal" href="#writing-and-appending">Writing and Appending</a></li>
-<li><a class="reference internal" href="#reading-and-querying">Reading and Querying</a></li>
-<li><a class="reference internal" href="#properties">Properties</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#sparsecellarrayframe-sparse-dataframes">2. <code class="docutils literal notranslate"><span class="pre">SparseCellArrayFrame</span></code> (Sparse DataFrames)</a><ul>
-<li><a class="reference internal" href="#id1">Writing and Appending</a></li>
-<li><a class="reference internal" href="#id2">Reading and Querying</a></li>
-<li><a class="reference internal" href="#string-dimensions">String Dimensions</a></li>
-<li><a class="reference internal" href="#id3">Properties</a></li>
+<li><a class="reference internal" href="#quick-start">Quick Start</a><ul>
+<li><a class="reference internal" href="#creating-a-frame">1. Creating a Frame</a></li>
+<li><a class="reference internal" href="#basic-slicing">2. Basic Slicing</a></li>
+<li><a class="reference internal" href="#column-selection">3. Column Selection</a></li>
+<li><a class="reference internal" href="#querying">4. Querying</a></li>
+<li><a class="reference internal" href="#appending-data">5. Appending Data</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#note">Note</a></li>
@@ -565,7 +423,7 @@ and <a class="reference external" href="https://pyscaffold.org/">PyScaffold</a>.
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=8c5712d9"></script>
+</div><script src="_static/documentation_options.js?v=282f96c0"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
