@@ -16,7 +16,5 @@ finally:
     del version, PackageNotFoundError
 
 
-from .base import CellArrayFrame
-from .dense import DenseCellArrayFrame
-from .sparse import SparseCellArrayFrame
-from .helpers import create_cellarr_frame
+from .base import CellArrayBaseFrame
+from .frame import CellArrayFrame
