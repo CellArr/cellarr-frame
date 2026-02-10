@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from typing import Any, List, Literal, Optional, Tuple, Union
+from warnings import warn
 
 import numpy as np
 import pandas as pd
@@ -78,6 +79,7 @@ class CellArrayBaseFrame(ABC):
         self._index_names = None
         self._shape = None
         self._nonempty_domain = None
+        self._index = None
 
         if validate:
             self._validate()
@@ -143,6 +145,26 @@ class CellArrayBaseFrame(ABC):
                 self._index_names = [dim.name for dim in A.schema.domain]
 
         return self._index_names
+
+    @property
+    def index(self) -> pd.DataFrame:
+        """Get index of the dataframe."""
+        if self._index is None:
+            with self.open_array(mode="r") as A:
+                _obj = {}
+                try:
+                    for idx_name in self.index_names:
+                        _obj[idx_name] = A.unique_dim_values(idx_name)
+                except Exception as _:
+                    warn("Failed to get unique dim values, is there an index?")
+                    pass
+
+                self._index = pd.DataFrame(_obj)
+        return self._index
+
+    def rownames(self) -> pd.DataFrame:
+        """Alias to :py:meth:`index`."""
+        return self.index
 
     @property
     def shape(self) -> Tuple[int, ...]:
