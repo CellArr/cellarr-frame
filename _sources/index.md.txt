@@ -1,17 +1,12 @@
 # cellarr-frame
 
-Add a short description here!
+`cellarr-frame` provides a high-level, Pandas-like interface for interacting with TileDB DataFrames.
 
+## Installation
 
-## Note
-
-> This is the main page of your project's [Sphinx] documentation. It is
-> formatted in [Markdown]. Add additional pages by creating md-files in
-> `docs` or rst-files (formatted in [reStructuredText]) and adding links to
-> them in the `Contents` section below.
->
-> Please check [Sphinx] and [MyST] for more information
-> about how to document your project and how to configure your preferences.
+```bash
+pip install cellarr-frame
+```
 
 
 ## Contents
