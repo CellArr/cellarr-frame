@@ -151,15 +151,17 @@ class CellArrayBaseFrame(ABC):
         """Get index of the dataframe."""
         if self._index is None:
             with self.open_array(mode="r") as A:
-                _obj = {}
-                try:
-                    for idx_name in self.index_names:
-                        _obj[idx_name] = A.unique_dim_values(idx_name)
-                except Exception as _:
-                    warn("Failed to get unique dim values, is there an index?")
-                    pass
-
-                self._index = pd.DataFrame(_obj)
+                if A.schema.sparse:
+                    try:
+                        q = A.query(attrs=[])
+                        result = q[:]
+                        _obj = {idx_name: result[idx_name] for idx_name in self.index_names}
+                        self._index = pd.DataFrame(_obj)
+                    except Exception as _:
+                        warn("Failed to get index values.")
+                        self._index = pd.DataFrame()
+                else:
+                    self._index = pd.DataFrame()
         return self._index
 
     def rownames(self) -> pd.DataFrame:
