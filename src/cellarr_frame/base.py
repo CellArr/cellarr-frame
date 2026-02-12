@@ -153,10 +153,7 @@ class CellArrayBaseFrame(ABC):
             with self.open_array(mode="r") as A:
                 if A.schema.sparse:
                     try:
-                        q = A.query(attrs=[])
-                        result = q[:]
-                        _obj = {idx_name: result[idx_name] for idx_name in self.index_names}
-                        self._index = pd.DataFrame(_obj)
+                        self._index = pd.DataFrame(A.query(attrs=[])[:])
                     except Exception as _:
                         warn("Failed to get index values.")
                         self._index = pd.DataFrame()
