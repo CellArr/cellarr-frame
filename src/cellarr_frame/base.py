@@ -211,7 +211,12 @@ class CellArrayBaseFrame(ABC):
         self.vacuum()
 
     def __getitem__(self, key: Union[slice, str, Tuple[Any, ...]]) -> pd.DataFrame:
-        """Route slicing/querying to implementation.
+        """
+        Route slicing/querying to implementation.
+
+        Note that strings passed with square bracket notation e.g. A["cell001"]
+        are assumed to be queries. If you want to select a row using string
+        indices, use a list of strings e.g. A[""cell001""]
 
         Args:
             key:
