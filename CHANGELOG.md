@@ -2,7 +2,7 @@
 
 ## Version 0.0.7 - 0.0.8
 - Change to `.index` property to support multi-dimensional CellArrayFrame objects.
-- Support range/slice on the column dimension. 
+- Support range/slice on the column dimension.
 
 ## Version 0.0.1 - 0.0.6
 
