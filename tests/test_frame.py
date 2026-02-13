@@ -60,7 +60,7 @@ class TestCellArrayFrame(unittest.TestCase):
         self.assertNotIn("group", res.columns)
         self.assertEqual(res.iloc[0]["value"], 1)
 
-        resr = cf[0:1, range(0,2)]
+        resr = cf[0:1, range(0, 2)]
         pd.testing.assert_frame_equal(res, resr)
 
     def test_query_condition(self):
