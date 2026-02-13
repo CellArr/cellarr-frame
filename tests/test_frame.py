@@ -50,6 +50,13 @@ class TestCellArrayFrame(unittest.TestCase):
         self.assertNotIn("name", res.columns)
         self.assertEqual(res.iloc[0]["value"], 1)
 
+        res = cf[0:1, 0:2]
+        self.assertEqual(len(res.columns), 2)
+        self.assertIn("value", res.columns)
+        self.assertIn("name", res.columns)
+        self.assertNotIn("group", res.columns)
+        self.assertEqual(res.iloc[0]["value"], 1)
+
     def test_query_condition(self):
         """Test string query conditions."""
         cf = CellArrayFrame(uri=self.uri)
