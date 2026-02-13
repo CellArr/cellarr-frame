@@ -15,7 +15,7 @@ pip install cellarr-frame
 
 ### 1. Creating a Frame
 
-You can create a new persistent `CellArrayFrame` directly from a Pandas DataFrame.
+You can create a new persistent `CellArrayFrame` directly from a Pandas DataFrame. Note that TileDB arrays with multiple dimensions are also supported.
 
 ```python
 import pandas as pd

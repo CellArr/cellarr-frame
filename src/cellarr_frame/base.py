@@ -151,15 +151,14 @@ class CellArrayBaseFrame(ABC):
         """Get index of the dataframe."""
         if self._index is None:
             with self.open_array(mode="r") as A:
-                _obj = {}
-                try:
-                    for idx_name in self.index_names:
-                        _obj[idx_name] = A.unique_dim_values(idx_name)
-                except Exception as _:
-                    warn("Failed to get unique dim values, is there an index?")
-                    pass
-
-                self._index = pd.DataFrame(_obj)
+                if A.schema.sparse:
+                    try:
+                        self._index = pd.DataFrame(A.query(attrs=[])[:])
+                    except Exception as _:
+                        warn("Failed to get index values.")
+                        self._index = pd.DataFrame()
+                else:
+                    self._index = pd.DataFrame()
         return self._index
 
     def rownames(self) -> pd.DataFrame:
@@ -212,7 +211,12 @@ class CellArrayBaseFrame(ABC):
         self.vacuum()
 
     def __getitem__(self, key: Union[slice, str, Tuple[Any, ...]]) -> pd.DataFrame:
-        """Route slicing/querying to implementation.
+        """
+        Route slicing/querying to implementation.
+
+        Note that strings passed with square bracket notation e.g. A["cell001"]
+        are assumed to be queries. If you want to select a row using string
+        indices, use a list of strings e.g. A[""cell001""]
 
         Args:
             key:
