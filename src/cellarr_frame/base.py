@@ -216,7 +216,7 @@ class CellArrayBaseFrame(ABC):
 
         Note that strings passed with square bracket notation e.g. A["cell001"]
         are assumed to be queries. If you want to select a row using string
-        indices, use a list of strings e.g. A[""cell001""]
+        indices, use a list of strings e.g. A[["cell001"]].
 
         Args:
             key:
