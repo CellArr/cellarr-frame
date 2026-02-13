@@ -50,12 +50,18 @@ class TestCellArrayFrame(unittest.TestCase):
         self.assertNotIn("name", res.columns)
         self.assertEqual(res.iloc[0]["value"], 1)
 
+        res_v = cf[0:1, "value"]
+        pd.testing.assert_frame_equal(res, res_v)
+
         res = cf[0:1, 0:2]
         self.assertEqual(len(res.columns), 2)
         self.assertIn("value", res.columns)
         self.assertIn("name", res.columns)
         self.assertNotIn("group", res.columns)
         self.assertEqual(res.iloc[0]["value"], 1)
+
+        resr = cf[0:1, range(0,2)]
+        pd.testing.assert_frame_equal(res, resr)
 
     def test_query_condition(self):
         """Test string query conditions."""
