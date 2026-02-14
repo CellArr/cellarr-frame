@@ -216,7 +216,7 @@ class CellArrayBaseFrame(ABC):
 
         Note that strings passed with square bracket notation e.g. A["cell001"]
         are assumed to be queries. If you want to select a row using string
-        indices, use a list of strings e.g. A[""cell001""]
+        indices, use a list of strings e.g. A[["cell001"]].
 
         Args:
             key:
@@ -239,6 +239,10 @@ class CellArrayBaseFrame(ABC):
             col_spec = key[1]
             if isinstance(col_spec, str):
                 col_spec = [col_spec]
+            if isinstance(col_spec, (slice, range)):
+                if isinstance(col_spec, range):
+                    col_spec = slice(col_spec.start, col_spec.stop, col_spec.step)
+                col_spec = self.column_names[col_spec]
 
         if isinstance(row_spec, str):
             return self._read_query(condition=row_spec, columns=col_spec)
