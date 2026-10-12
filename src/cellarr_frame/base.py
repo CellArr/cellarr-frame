@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Any, List, Literal, Optional, Tuple, Union
+from typing import Any, Literal
 from warnings import warn
 
 import numpy as np
@@ -17,10 +17,10 @@ class CellArrayBaseFrame(ABC):
 
     def __init__(
         self,
-        uri: Optional[str] = None,
-        tiledb_array_obj: Optional[tiledb.Array] = None,
-        mode: Optional[Literal["r", "w", "d", "m"]] = None,
-        config_or_context: Optional[Union[tiledb.Config, tiledb.Ctx]] = None,
+        uri: str | None = None,
+        tiledb_array_obj: tiledb.Array | None = None,
+        mode: Literal["r", "w", "d", "m"] | None = None,
+        config_or_context: tiledb.Config | tiledb.Ctx | None = None,
         validate: bool = True,
     ):
         """Initialize the object.
@@ -91,7 +91,7 @@ class CellArrayBaseFrame(ABC):
                 pass
 
     @property
-    def mode(self) -> Optional[str]:
+    def mode(self) -> str | None:
         """Get current array mode. If an external array is used, this is its open mode."""
         if self._array_passed_in and self._opened_array_external:
             return self._opened_array_external.mode
@@ -99,7 +99,7 @@ class CellArrayBaseFrame(ABC):
         return self._mode
 
     @mode.setter
-    def mode(self, value: Optional[str]):
+    def mode(self, value: str | None):
         """Set array mode for subsequent operations if not using an external array."""
         if self._array_passed_in:
             raise ValueError("Cannot change mode of an externally managed array.")
@@ -110,7 +110,7 @@ class CellArrayBaseFrame(ABC):
         self._mode = value
 
     @contextmanager
-    def open_array(self, mode: Optional[str] = None):
+    def open_array(self, mode: str | None = None):
         """Context manager for array operations."""
         if self._array_passed_in and self._opened_array_external:
             if not self._opened_array_external.isopen:
@@ -129,7 +129,7 @@ class CellArrayBaseFrame(ABC):
                 array.close()
 
     @property
-    def column_names(self) -> List[str]:
+    def column_names(self) -> list[str]:
         """Get attribute/column names of the dataframe."""
         if self._column_names is None:
             with self.open_array(mode="r") as A:
@@ -138,7 +138,7 @@ class CellArrayBaseFrame(ABC):
         return self._column_names
 
     @property
-    def index_names(self) -> List[str]:
+    def index_names(self) -> list[str]:
         """Get dimension/index names of the dataframe."""
         if self._index_names is None:
             with self.open_array(mode="r") as A:
@@ -166,7 +166,7 @@ class CellArrayBaseFrame(ABC):
         return self.index
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         """Get the shape of the dataframe (rows, columns)."""
         if self._shape is None:
             with self.open_array(mode="r") as A:
@@ -210,7 +210,7 @@ class CellArrayBaseFrame(ABC):
         tiledb.consolidate(self.uri, ctx=self._ctx)
         self.vacuum()
 
-    def __getitem__(self, key: Union[slice, str, Tuple[Any, ...]]) -> pd.DataFrame:
+    def __getitem__(self, key: slice | str | tuple[Any, ...]) -> pd.DataFrame:
         """
         Route slicing/querying to implementation.
 
@@ -250,14 +250,13 @@ class CellArrayBaseFrame(ABC):
         return self._read_slice(row_spec, col_spec)
 
     @abstractmethod
-    def _read_slice(self, rows: Any, cols: Optional[List[str]]) -> pd.DataFrame:
+    def _read_slice(self, rows: Any, cols: list[str] | None) -> pd.DataFrame:
         pass
 
     @abstractmethod
-    def _read_query(self, condition: str, columns: Optional[List[str]]) -> pd.DataFrame:
+    def _read_query(self, condition: str, columns: list[str] | None) -> pd.DataFrame:
         pass
 
     @abstractmethod
     def write_batch(self, data: pd.DataFrame, **kwargs) -> None:
         """Write or append data to the frame."""
-        pass

@@ -23,11 +23,13 @@ import shutil
 from cellarr_frame import CellArrayFrame
 
 # Prepare some data
-df = pd.DataFrame({
-    "name": ["GeneA", "GeneB", "GeneC", "GeneD"],
-    "expression": [12.5, 0.0, 5.2, 8.1],
-    "category": ["coding", "non-coding", "coding", "coding"]
-})
+df = pd.DataFrame(
+    {
+        "name": ["GeneA", "GeneB", "GeneC", "GeneD"],
+        "expression": [12.5, 0.0, 5.2, 8.1],
+        "category": ["coding", "non-coding", "coding", "coding"],
+    }
+)
 df.index.name = "row_id"
 
 # Create the TileDB array at the specified URI
@@ -53,7 +55,6 @@ print(cf[0:2])
 # row_id
 # 0       GeneA        12.5      coding
 # 1       GeneB         0.0  non-coding
-
 ```
 
 ### 3. Column Selection
@@ -63,7 +64,6 @@ Optimize performance by selecting only specific columns.
 ```python
 # Select only 'name' and 'expression' for the first row
 print(cf[0:1, ["name", "expression"]])
-
 ```
 
 ### 4. Querying
@@ -79,7 +79,6 @@ print(high_expr)
 # Get names of all 'coding' genes
 coding_genes = cf["category == 'coding'", ["name"]]
 print(coding_genes)
-
 ```
 
 ### 5. Appending Data
@@ -87,11 +86,7 @@ print(coding_genes)
 Append new batches of data to the existing array.
 
 ```python
-new_data = pd.DataFrame({
-    "name": ["GeneE"],
-    "expression": [99.9],
-    "category": ["coding"]
-})
+new_data = pd.DataFrame({"name": ["GeneE"], "expression": [99.9], "category": ["coding"]})
 # Ensure the index continues correctly
 new_data.index = [4]
 new_data.index.name = "row_id"
