@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any
 
 import pandas as pd
 import tiledb
@@ -13,7 +13,7 @@ __license__ = "MIT"
 class CellArrayFrame(CellArrayBaseFrame):
     """Implementation for TileDB DataFrames."""
 
-    def _read_slice(self, rows: Any, cols: Optional[List[str]]) -> pd.DataFrame:
+    def _read_slice(self, rows: Any, cols: list[str] | None) -> pd.DataFrame:
         """Read data using direct slicing.
 
         Args:
@@ -42,7 +42,7 @@ class CellArrayFrame(CellArrayBaseFrame):
 
             return query.df[rows]
 
-    def _read_query(self, condition: str, columns: Optional[List[str]]) -> pd.DataFrame:
+    def _read_query(self, condition: str, columns: list[str] | None) -> pd.DataFrame:
         """Read data using a string query condition.
 
         Args:
@@ -74,7 +74,7 @@ class CellArrayFrame(CellArrayBaseFrame):
 
     @classmethod
     def create(
-        cls, uri: str, data: pd.DataFrame, index_dims: Optional[List[str]] = None, full_domain: bool = True, **kwargs
+        cls, uri: str, data: pd.DataFrame, index_dims: list[str] | None = None, full_domain: bool = True, **kwargs
     ):
         """Helper to create a new CellFrame from a dataframe.
 
