@@ -29,7 +29,7 @@ class TestCellArrayFrame(unittest.TestCase):
         self.assertEqual(len(cf.column_names), 3)  # name, value, group
 
         self.assertIn("row_id", cf.index.columns)
-        pd.testing.assert_frame_equal(cf.index, pd.DataFrame({"row_id": range(0, 4)}))
+        pd.testing.assert_frame_equal(cf.index, pd.DataFrame({"row_id": range(4)}))
 
     def test_slice_rows(self):
         """Test slicing rows."""
@@ -60,7 +60,7 @@ class TestCellArrayFrame(unittest.TestCase):
         self.assertNotIn("group", res.columns)
         self.assertEqual(res.iloc[0]["value"], 1)
 
-        resr = cf[0:1, range(0, 2)]
+        resr = cf[0:1, range(2)]
         pd.testing.assert_frame_equal(res, resr)
 
     def test_query_condition(self):
